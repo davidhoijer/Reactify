@@ -1,32 +1,36 @@
 import * as React from 'react';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import ProTip from './ProTip';
+import ProTip from './components/ProTip';
+import Copyright from "./components/Copyright";
+import StartPageHeader from "./components/StartPageHeader";
+import Authorize from "./components/Authorize";
+import {createTheme, ThemeProvider} from "@mui/material/styles";
+import NowPlaying from "./components/NowPlaying";
 
-function Copyright() {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}.
-        </Typography>
-    );
-}
+const theme = createTheme({
+    palette: {
+        primary:{
+            main:"#1DB954"
+        },
+        secondary: {
+            main: "#2c3e50"
+        },
+    },
+});
 
 export default function App() {
     return (
-        <Container maxWidth="sm">
-            <Box sx={{ my: 4 }}>
-                <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
-                    Material UI Create React App example in TypeScript
-                </Typography>
-                <ProTip />
-                <Copyright />
-            </Box>
-        </Container>
+        <ThemeProvider theme={theme}>
+            <Container maxWidth="sm" sx={{backgroundColor:"secondary.main"}}>
+                <Box flex={1} sx={{ my: 4 }}>
+                    <StartPageHeader/>
+                    <Authorize/>
+                    <NowPlaying/>
+                    <ProTip />
+                    <Copyright />
+                </Box>
+            </Container>
+        </ThemeProvider>
     );
 }
