@@ -7,6 +7,7 @@ import StartPageHeader from "./components/StartPageHeader";
 import Authorize from "./components/Authorize";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import NowPlaying from "./components/NowPlaying";
+import SpotifyUserComponent from "./components/SpotifyUserComponent";
 
 const theme = createTheme({
     palette: {
@@ -21,16 +22,18 @@ const theme = createTheme({
 
 export default function App() {
     return (
-        <ThemeProvider theme={theme}>
-            <Container maxWidth="sm" sx={{backgroundColor:"secondary.main"}}>
-                <Box flex={1} sx={{ my: 4 }}>
-                    <StartPageHeader/>
-                    <Authorize/>
-                    <NowPlaying/>
-                    <ProTip />
-                    <Copyright />
-                </Box>
-            </Container>
-        </ThemeProvider>
-    );
+            <ThemeProvider theme={theme}>
+                <Container maxWidth="sm" sx={{backgroundColor:"secondary.main"}}>
+                    <Box flex={1} sx={{ my: 4 }}>
+                        <StartPageHeader/>
+                        <SpotifyUserComponent></SpotifyUserComponent>
+                        <Authorize/>
+                        <NowPlaying/>
+                        <ProTip />
+                        <Copyright />
+                        {/*<ReactQueryExample/>*/}
+                    </Box>
+                </Container>
+            </ThemeProvider>
+);
 }
