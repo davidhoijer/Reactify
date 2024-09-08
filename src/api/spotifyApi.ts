@@ -1,24 +1,20 @@
 import {useQuery} from "@tanstack/react-query";
 import {SpotifyUser} from "../types/SpotifyUser";
-
+import {CurrentSong} from "../types/CurrentSong";
 
 export const GetSpotifyUserProfile = async () => {
-
-// Now you can access environment variables using process.env
-    
     const clientId = ""; // Replace with your client id
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
-    const a = process.env.VUE_APP_SP_CLIENT_ID;
-    console.log(a)
-    
     
     if (!code) {
         await redirectToAuthCodeFlow(clientId);
     } else {
         const accessToken = await getAccessToken(clientId, code);
         const profile: SpotifyUser = await fetchProfile(accessToken);
-        console.log(profile); // Profile data logs to console
+        console.log("profile", profile);
+        const currentSong = await fetchCurrentSong(accessToken);
+        console.log("currentSong", currentSong);
         return profile;
         // populateUI(profile);
     }
@@ -65,6 +61,14 @@ export const GetSpotifyUserProfile = async () => {
             method: "GET", headers: { Authorization: `Bearer ${token}` }
         });
 
+        return await result.json();
+    }
+    
+    async function fetchCurrentSong(token: string): Promise<CurrentSong> {
+        const result = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+            method: "GET", headers: { Authorization: `Bearer ${token}`}
+            });
+        
         return await result.json();
     }
     

@@ -2,7 +2,7 @@ import {useSpotifyUserProfile} from "../api/spotifyApi";
 import Box from "@mui/material/Box";
 import React from "react";
 
-const SpotifyUserComponent = () => {
+const CurrentSongComponent = () => {
     const { isLoading, error, data } = useSpotifyUserProfile();
 
     if (isLoading) return (
@@ -11,7 +11,7 @@ const SpotifyUserComponent = () => {
         </Box>
     );
     if (error) 
-        console.log('An error occurred while fetching the user data ', error);
+        console.log('An error occurred while fetching current song ', error);
 
     return (
         <div>
@@ -21,4 +21,4 @@ const SpotifyUserComponent = () => {
     );
 }
 
-export default SpotifyUserComponent;
+export default CurrentSongComponent;
