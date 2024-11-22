@@ -1,0 +1,90 @@
+.current-song-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+    background-color: #000;
+    color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    width: 500px; /* Adjust as necessary */
+    margin: auto; /* Center horizontally */
+}
+
+.current-song-header {
+    text-align: center;
+}
+
+.album-art {
+    margin: 15px 0;
+}
+
+.album-image {
+    width: 400px; /* Adjust size for album art */
+    height: 400px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.song-info {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.song-title {
+    font-size: 1.5em; /* Title size */
+}
+
+.song-artist {
+    font-size: 1.2em; /* Artist name size */
+    color: #bbb; /* Slightly lighter for artist name */
+}
+
+.controls {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.control-button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2em; /* Size of control buttons */
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.control-button:hover {
+    transform: scale(1.1); /* Slight zoom on hover */
+}
+
+.song-timer {
+    font-size: 1.1em; /* Adjust font size */
+    color: #bbb; /* Slightly lighter for the timer */
+    margin: 10px 0; /* Space around the timer */
+}
+
+.progress-container {
+    width: 100%;
+    background-color: #444; /* Background color of the progress bar */
+    border-radius: 5px;
+    overflow: hidden; /* Ensures the child doesn't overflow the container */
+    height: 10px; /* Height of the progress bar */
+    margin: 15px 0; /* Spacing around the progress bar */
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #1db954; /* Color of the progress */
+    transition: width 0.1s ease; /* Smooth transition for the width change */
+}
+
+.song-progress {
+    width: 100%; /* Ensure the entire width is utilized */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+    margin-top: 10px; /* Space above the component */
+}
