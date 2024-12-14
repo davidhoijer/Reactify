@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import '../styling/Styling.css';
 import CurrentSongComponent from "./CurrentSong";
 
-const POLL_INTERVAL = 1000;
+const POLL_INTERVAL = process.env.REACT_APP_POLL_RATE ? parseInt(process.env.REACT_APP_POLL_RATE) : 5000;
 
 const MainPage = () => {
   const [userProfile, setUserProfile] = useState<SpotifyUser | null>(null);
@@ -84,7 +84,7 @@ const MainPage = () => {
 
   return (
     <div>
-      <CurrentSongComponent userProfile={userProfile} currentSong={currentSong}/>
+      <CurrentSongComponent userProfile={userProfile} currentSong={currentSong} />
     </div>
   );
 };

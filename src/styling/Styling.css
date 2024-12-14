@@ -88,3 +88,33 @@
     align-items: center; /* Center items horizontally */
     margin-top: 10px; /* Space above the component */
 }
+
+
+.podcast-info {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .podcast-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  .podcast-message {
+    font-size: 1rem;
+    color: #aaaaaa;
+  }
+  
+  .podcast-placeholder {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .podcast-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
