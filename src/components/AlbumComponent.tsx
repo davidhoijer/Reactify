@@ -20,6 +20,7 @@ const AlbumComponent: React.FC<AlbumComponentProps> = ({currentSong, imgRef}) =>
         )}
       </div>
       <div className="song-info">
+        tests
         <h2 className="song-title">{currentSong?.item.name}</h2>
         <h3 className="song-artist">{currentSong?.item.artists[0].name}</h3>
       </div>
