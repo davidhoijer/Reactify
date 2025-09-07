@@ -1,12 +1,12 @@
 import React from 'react';
-import {CurrentSong} from "../types/CurrentSong";
+import { CurrentSong } from "../types/CurrentSong";
 
 interface AlbumComponentProps {
   currentSong: CurrentSong; // Ideally, replace `any` with your specific song type
   imgRef: React.RefObject<HTMLImageElement>;
 }
 
-const AlbumComponent: React.FC<AlbumComponentProps> = ({currentSong, imgRef}) => {
+const AlbumComponent: React.FC<AlbumComponentProps> = ({ currentSong, imgRef }) => {
   return (
     <div>
       <div className="album-art">

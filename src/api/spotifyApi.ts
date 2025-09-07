@@ -1,5 +1,5 @@
-import {SpotifyUser} from "../types/SpotifyUser";
-import {CurrentSong} from "../types/CurrentSong";
+import { SpotifyUser } from "../types/SpotifyUser";
+import { CurrentSong } from "../types/CurrentSong";
 
 const clientId = process.env.REACT_APP_CLIENT_ID ?? "";
 
@@ -32,7 +32,7 @@ const getAccessToken = async (code: string) => {
 
   const result = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
-    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: params
   });
 
@@ -40,8 +40,8 @@ const getAccessToken = async (code: string) => {
     throw new Error("Failed to get access token");
   }
 
-  const {access_token, refresh_token, expires_in} = await result.json();
-  return {accessToken: access_token, refreshToken: refresh_token, expiresIn: expires_in};
+  const { access_token, refresh_token, expires_in } = await result.json();
+  return { accessToken: access_token, refreshToken: refresh_token, expiresIn: expires_in };
 
 };
 
@@ -53,7 +53,7 @@ const refreshAccessToken = async (refreshToken: string) => {
 
   const result = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
-    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: params
   });
 
@@ -61,7 +61,7 @@ const refreshAccessToken = async (refreshToken: string) => {
     throw new Error("Failed to refresh access token");
   }
 
-  const {access_token, expires_in} = await result.json();
+  const { access_token, expires_in } = await result.json();
 
   localStorage.setItem("access_token", access_token);
   localStorage.setItem("token_expiry_time", (new Date().getTime() + expires_in * 1000).toString());
@@ -72,7 +72,7 @@ const refreshAccessToken = async (refreshToken: string) => {
 const fetchProfile = async (token: string, refreshToken: string): Promise<SpotifyUser> => {
   const result = await fetch("https://api.spotify.com/v1/me", {
     method: "GET",
-    headers: {Authorization: `Bearer ${token}`},
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   if (result.status === 401 || result.status === 400) {
@@ -90,7 +90,7 @@ const fetchProfile = async (token: string, refreshToken: string): Promise<Spotif
 const fetchCurrentSong = async (token: string, refreshToken: string): Promise<CurrentSong | null> => {
   const result = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
     method: "GET",
-    headers: {Authorization: `Bearer ${token}`},
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   if (result.status === 401 || result.status === 400) {
@@ -110,7 +110,7 @@ const fetchCurrentSong = async (token: string, refreshToken: string): Promise<Cu
   return JSON.parse(text);
 };
 
-export {fetchProfile, fetchCurrentSong, getAccessToken, refreshAccessToken, redirectToAuthCodeFlow};
+export { fetchProfile, fetchCurrentSong, getAccessToken, refreshAccessToken, redirectToAuthCodeFlow };
 
 
 function generateCodeVerifier(length: number) {
