@@ -30,13 +30,12 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
     setDuration(currentSong.item?.duration_ms || 0);
     setIsPlaying(currentSong.is_playing);
   }, [currentSong, isPodcastOrEpisode]);
+  const albumId = currentSong?.item.album?.id;
 
 
   // Get background colour, and cache for same album
   useEffect(() => {
-    if (isPodcastOrEpisode || !currentSong?.item?.album?.images?.length) return;
-    const albumId = currentSong?.item.album.id;
-    if (!albumId) return
+    if (isPodcastOrEpisode || !albumId || !currentSong?.item?.album?.images?.length) return;
 
     const images = currentSong.item.album.images;
     const smallestImageUrl = images[images.length - 1]?.url || images[0]?.url;
@@ -66,8 +65,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
     return () => {
       cancelled = true;
     };
-  }, [isPodcastOrEpisode, currentSong?.item?.album?.images]);
-
+  }, [albumId, isPodcastOrEpisode, currentSong?.item?.album?.images]);
 
   const formatTime = useMemo(() => (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
@@ -76,22 +74,22 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }, []);
 
-  const progressPercentage = duration > 0 ? (progress / duration) * 100 : 0;
-
+  // Update progress every second if the song is playing
   useEffect(() => {
-    if (!isPlaying || duration <= 0) return;
-    let raf = 0;
-    const start = performance.now();
-    const base = progress;
-    const step = (t: number) => {
-      const elapsed = t - start;
-      const next = Math.min(base + elapsed, duration);
-      setProgress(p => (p !== next ? next : p));
-      if (next < duration) raf = requestAnimationFrame(step);
+    let interval: NodeJS.Timeout;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setProgress(prevProgress => {
+          return Math.min(prevProgress + 1000, duration);
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
     };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [isPlaying, duration]); // medvetet utan `progress`
+  }, [isPlaying, duration]);
+
+  const progressPercentage = duration > 0 ? (progress / duration) * 100 : 0;
 
   return (
     <div className="current-song-ui" style={{backgroundColor}}>

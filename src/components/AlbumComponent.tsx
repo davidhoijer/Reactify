@@ -15,6 +15,10 @@ const AlbumComponent: React.FC<AlbumComponentProps> = ({ currentSong, imgRef }) 
             ref={imgRef}
             src={currentSong.item.album.images[0].url}
             alt={currentSong.item.album.name}
+            width={300}
+            height={300}
+            decoding="async"
+            loading="lazy"
             className="album-image"
           />
         )}
