@@ -21,8 +21,8 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth={false} sx={{ backgroundColor: theme.palette.background.default, minHeight: '100vh', p: 5 }}>
-        <Box flex={1} sx={{my: 4}}>
+      <Container sx={{ backgroundColor: theme.palette.background.default, p: 1.5 }}>
+        <Box >
           {/*<StartPageHeader/>*/}
           <MainPage></MainPage>
         </Box>
