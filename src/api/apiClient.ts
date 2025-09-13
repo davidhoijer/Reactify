@@ -5,9 +5,9 @@ export const tokenStore = {
     const at = localStorage.getItem("access_token");
     const rt = localStorage.getItem("refresh_token");
     const exp = Number(localStorage.getItem("token_expiry_time") ?? 0);
-    return at && rt ? { accessToken: at, refreshToken: rt, expiresAt: exp } : null;
+    return at && rt ? {accessToken: at, refreshToken: rt, expiresAt: exp} : null;
   },
-  write({ accessToken, refreshToken, expiresIn }: { accessToken: string; refreshToken: string; expiresIn: number }) {
+  write({accessToken, refreshToken, expiresIn}: { accessToken: string; refreshToken: string; expiresIn: number }) {
     const expiresAt = Date.now() + expiresIn * 1000 - 15_000; // 15s marginal
     localStorage.setItem("access_token", accessToken);
     localStorage.setItem("refresh_token", refreshToken);
@@ -18,14 +18,24 @@ export const tokenStore = {
     localStorage.setItem("access_token", accessToken);
     localStorage.setItem("token_expiry_time", String(expiresAt));
   },
+  clear() {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("token_expiry_time");
+  },
 };
 
-async function backoff(ms: number) { return new Promise(r => setTimeout(r, ms)); }
+async function backoff(ms: number) {
+  return new Promise(r => setTimeout(r, ms));
+}
 
-export async function spotifyFetch(input: RequestInfo, init: RequestInit, bag: TokenBag, refreshOnce: () => Promise<{access_token:string; expires_in:number}>) {
+export async function spotifyFetch(input: RequestInfo, init: RequestInit, bag: TokenBag, refreshOnce: () => Promise<{
+  access_token: string;
+  expires_in: number
+}>) {
   const doFetch = () => fetch(input, {
     ...init,
-    headers: { ...(init.headers || {}), Authorization: `Bearer ${bag.accessToken}` },
+    headers: {...(init.headers || {}), Authorization: `Bearer ${bag.accessToken}`},
   });
 
   let res = await doFetch();
@@ -42,11 +52,11 @@ export async function spotifyFetch(input: RequestInfo, init: RequestInit, bag: T
 
   // 401/400 -> testa refresh EN gång
   if (res.status === 401 || res.status === 400) {
-    const { access_token, expires_in } = await refreshOnce();
+    const {access_token, expires_in} = await refreshOnce();
     tokenStore.writeAccess(access_token, expires_in);
     const res2 = await fetch(input, {
       ...init,
-      headers: { ...(init.headers || {}), Authorization: `Bearer ${access_token}` },
+      headers: {...(init.headers || {}), Authorization: `Bearer ${access_token}`},
     });
     if (res2.status === 204) return null;
     if (!res2.ok) throw new Error(`Spotify error ${res2.status}`);
