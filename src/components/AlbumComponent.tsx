@@ -2,7 +2,7 @@ import React from 'react';
 import { CurrentSong } from "../types/CurrentSong";
 
 interface AlbumComponentProps {
-  currentSong: CurrentSong; // Ideally, replace `any` with your specific song type
+  currentSong: CurrentSong;
   imgRef: React.RefObject<HTMLImageElement>;
 }
 
@@ -20,7 +20,6 @@ const AlbumComponent: React.FC<AlbumComponentProps> = ({ currentSong, imgRef }) 
         )}
       </div>
       <div className="song-info">
-        tests
         <h2 className="song-title">{currentSong?.item.name}</h2>
         <h3 className="song-artist">{currentSong?.item.artists[0].name}</h3>
       </div>
