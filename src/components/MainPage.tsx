@@ -1,9 +1,16 @@
 import React, {useEffect, useRef, useState} from "react";
-import {fetchProfile, fetchCurrentSong, redirectToAuthCodeFlow, getAccessToken} from "../api/spotifyApi";
+import {
+  fetchProfile,
+  fetchCurrentSong,
+  redirectToAuthCodeFlow,
+  getAccessToken,
+  refreshAccessToken
+} from "../api/spotifyApi";
 import type {SpotifyUser} from "../types/SpotifyUser";
 import type {CurrentSong} from "../types/CurrentSong";
 import Box from "@mui/material/Box";
 import CurrentSongComponent from "./CurrentSong";
+import {tokenStore} from "../api/apiClient";
 
 const FAST_MS = 1000;      // spelar
 const PAUSED_MS = 7000;    // paus/podcast
@@ -73,31 +80,45 @@ const MainPage: React.FC = () => {
       try {
         const params = new URLSearchParams(window.location.search);
         const code = params.get("code");
+        const bag = tokenStore.read(); // { accessToken, refreshToken, expiresAt } | null
 
-        const accessToken = localStorage.getItem("access_token");
-        const exp = Number(localStorage.getItem("token_expiry_time") ?? 0);
-        const isExpired = !accessToken || Date.now() >= exp;
-
-        if (!accessToken && !code) {
+        if (!bag && !code) {
           await redirectToAuthCodeFlow();
           return;
         }
 
-        if (isExpired) {
-          if (!code) throw new Error("No code available for fetching access token");
+        if (!bag && code) {
+          // Första inloggningen (PKCE code exchange)
           await getAccessToken(code);
-          // snygg URL utan ?code
-          window.history.replaceState({}, "", window.location.pathname);
+          // Ta bort ?code för att undvika dubbel-exchange vid refresh
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+        } else if (bag) {
+          // Har tokens – proaktiv refresh om utgånget
+          if (Date.now() >= bag.expiresAt) {
+            try {
+              const {access_token, expires_in} = await refreshAccessToken(bag.refreshToken);
+              tokenStore.writeAccess(access_token, expires_in);
+            } catch (err) {
+              console.error("Initial refresh failed:", err);
+              // Rensa & tvinga ny login (fixar ogiltigt refresh_token / missmatch)
+              tokenStore.clear();
+              await redirectToAuthCodeFlow();
+              return;
+            }
+          }
         }
 
+        // Nu ska vi ha en giltig access-token – hämta data
         const [profile, song] = await Promise.all([fetchProfile(), fetchCurrentSong()]);
         setUserProfile(profile);
         setCurrentSong(song);
 
-        // Starta adaptiv polling baserat på nuvarande state
+        // Starta adaptiv polling
         schedule(nextDelayFor(song));
       } catch (e: any) {
-        setError(e.message ?? String(e));
+        console.error(e);
+        setError(e?.message ?? String(e));
       } finally {
         setLoading(false);
       }
@@ -105,7 +126,6 @@ const MainPage: React.FC = () => {
 
     const onVis = () => {
       if (!document.hidden) {
-        // Kicka igång direkt när sidan blir synlig igen
         schedule(0);
       } else {
         clearTimer();
@@ -121,6 +141,7 @@ const MainPage: React.FC = () => {
       document.removeEventListener("visibilitychange", onVis);
     };
   }, []);
+
 
   if (loading) return <Box>Loading…</Box>;
   if (error) return <Box>Error: {error}</Box>;
