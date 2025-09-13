@@ -3,9 +3,6 @@ import React from "react";
 import Typography from "@mui/material/Typography";
 import {Button} from "@mui/material";
 
-const searchParams = new URLSearchParams()
-const currentParams = new URLSearchParams(window.location.search)
-
 function Authorize(){
     
     return <Box>

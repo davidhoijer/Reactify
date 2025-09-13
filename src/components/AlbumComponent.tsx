@@ -2,7 +2,7 @@ import React from 'react';
 import { CurrentSong } from "../types/CurrentSong";
 
 interface AlbumComponentProps {
-  currentSong: CurrentSong; // Ideally, replace `any` with your specific song type
+  currentSong: CurrentSong;
   imgRef: React.RefObject<HTMLImageElement>;
 }
 
