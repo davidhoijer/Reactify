@@ -1,3 +1,4 @@
+/*Main component*/
 .current-song-ui {
     display: flex;
     flex-direction: column;
@@ -13,32 +14,84 @@
     margin: auto; /* Center horizontally */
 }
 
-
-.current-song-header {
-    text-align: center;
-}
-
-
+/*Album image*/
 .album-image {
     width: 100%; /* Adjust size for album art */
     height: 100%;
     border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
+/*Song and artist info*/
 .song-info {
     text-align: center;
-    margin-bottom: 20px;
 }
 
 .song-title {
-    font-size: 1.5em; /* Title size */
+    font-size: 1.8em; /* Title size */
 }
 
 .song-artist {
-    font-size: 1.2em; /* Artist name size */
-    color: #bbb; /* Slightly lighter for artist name */
+    font-size: 1.4em; /* Artist name size */
 }
 
+/*Progress bar*/
+.song-timer {
+    font-size: 1.1em; /* Adjust font size */
+    color: #bbb; /* Slightly lighter for the timer */
+    margin: 10px 0; /* Space around the timer */
+}
+
+.progress-container {
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden; /* Ensures the child doesn't overflow the container */
+    height: 15px; /* Height of the progress bar */
+    margin: 15px 0; /* Spacing around the progress bar */
+}
+
+.progress-bar {
+    height: 100%;
+    transition: width 0.1s ease; /* Smooth transition for the width change */
+}
+
+.song-progress {
+    width: 100%; /* Ensure the entire width is utilized */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+}
+
+/*Podcast*/
+.podcast-info {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+  
+.podcast-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.podcast-message {
+    font-size: 1rem;
+    color: #aaaaaa;
+}
+
+.podcast-placeholder {
+    display: flex;
+    justify-content: center;
+}
+
+.podcast-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/*Buttons to add in future?*/
 .controls {
     display: flex;
     justify-content: space-around;
@@ -57,62 +110,4 @@
 .control-button:hover {
     transform: scale(1.1); /* Slight zoom on hover */
 }
-
-.song-timer {
-    font-size: 1.1em; /* Adjust font size */
-    color: #bbb; /* Slightly lighter for the timer */
-    margin: 10px 0; /* Space around the timer */
-}
-
-.progress-container {
-    width: 100%;
-    background-color: #444; /* Background color of the progress bar */
-    border-radius: 5px;
-    overflow: hidden; /* Ensures the child doesn't overflow the container */
-    height: 10px; /* Height of the progress bar */
-    margin: 15px 0; /* Spacing around the progress bar */
-}
-
-.progress-bar {
-    height: 100%;
-    background-color: #1db954; /* Color of the progress */
-    transition: width 0.1s ease; /* Smooth transition for the width change */
-}
-
-.song-progress {
-    width: 100%; /* Ensure the entire width is utilized */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center items horizontally */
-    margin-top: 10px; /* Space above the component */
-}
-
-
-.podcast-info {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-  
-  .podcast-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #ffffff;
-  }
-  
-  .podcast-message {
-    font-size: 1rem;
-    color: #aaaaaa;
-  }
-  
-  .podcast-placeholder {
-    display: flex;
-    justify-content: center;
-  }
-  
-  .podcast-image {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 10px;
-  }
   
