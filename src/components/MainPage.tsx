@@ -146,9 +146,7 @@ const MainPage: React.FC = () => {
   if (loading) return <Box>Loading…</Box>;
   if (error) return <Box>Error: {error}</Box>;
   return (
-    <div>
-      <CurrentSongComponent userProfile={userProfile} currentSong={currentSong}/>
-    </div>
+    <CurrentSongComponent userProfile={userProfile} currentSong={currentSong}/>
   );
 };
 

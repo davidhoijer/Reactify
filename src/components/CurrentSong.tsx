@@ -1,10 +1,10 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {CurrentSong} from '../types/CurrentSong';
 import '../styling/Styling.css';
-import Vibrant from "node-vibrant/lib/bundle";
 import AlbumComponent from "./AlbumComponent";
 import {SpotifyUser} from "../types/SpotifyUser";
 import SongProgressComponent from "./SongProgressComponent";
+import {VibrantContext} from "../contexts/VibrantContext";
 
 interface CurrentSongProps {
   userProfile: SpotifyUser | null;
@@ -20,7 +20,9 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-
+  
+  const {mainVibrant, vibrantColours} = useContext(VibrantContext);
+  
   const isPodcastOrEpisode = currentSong?.currently_playing_type === "episode";
 
   // Update base state
@@ -48,12 +50,10 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
     let cancelled = false;
     const run = async () => {
       try {
-        const vibrant = new Vibrant(smallestImageUrl, {quality: 1});
-        const palette = await vibrant.getPalette();
-        const dominantColor = palette.Vibrant?.hex || '#ffffff';
+        let _ = await vibrantColours(smallestImageUrl);
         if (!cancelled) {
-          albumColorCache.set(albumId, dominantColor);
-          setBackgroundColor(dominantColor);
+          albumColorCache.set(albumId, mainVibrant);
+          setBackgroundColor(mainVibrant);
         }
       } catch {
         if (!cancelled) setBackgroundColor('#ffffff');

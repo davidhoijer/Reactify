@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import MainPage from "./components/MainPage";
 import CssBaseline from "@mui/material/CssBaseline";
+import {VibrantProvider} from "./contexts/VibrantContext";
 
 const theme = createTheme({
   palette: {
@@ -15,17 +16,30 @@ const theme = createTheme({
       primary: "#ffffff",  // Text color to ensure readability on dark background
     }
   },
+  // typography: {
+  // }
 });
 
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container sx={{ backgroundColor: theme.palette.background.default, p: 1.5 }}>
-        <Box >
-          {/*<StartPageHeader/>*/}
-          <MainPage></MainPage>
-        </Box>
+      <Container
+        disableGutters
+        maxWidth={false}
+        sx={{
+          minHeight: '100vh',
+          backgroundColor: theme.palette.background.default,
+          display: 'flex',
+          p: 2
+        }}
+      >
+        <VibrantProvider>
+          <Box sx={{ width: '100%' }}>
+            {/*<StartPageHeader/>*/}
+            <MainPage />
+          </Box>
+        </VibrantProvider>
       </Container>
     </ThemeProvider>
   );
