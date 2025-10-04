@@ -32,7 +32,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
     setDuration(currentSong.item?.duration_ms || 0);
     setIsPlaying(currentSong.is_playing);
   }, [currentSong, isPodcastOrEpisode]);
-  const albumId = currentSong?.item.album?.id;
+  const albumId = currentSong?.item?.album?.id;
 
 
   // Get background colour, and cache for same album
@@ -50,10 +50,10 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
     let cancelled = false;
     const run = async () => {
       try {
-        let _ = await vibrantColours(smallestImageUrl);
+        const { mainVibrant: mv } = await vibrantColours(smallestImageUrl);
         if (!cancelled) {
-          albumColorCache.set(albumId, mainVibrant);
-          setBackgroundColor(mainVibrant);
+          albumColorCache.set(albumId, mv);
+          setBackgroundColor(mv);
         }
       } catch {
         if (!cancelled) setBackgroundColor('#ffffff');
@@ -65,7 +65,11 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
     return () => {
       cancelled = true;
     };
-  }, [albumId, isPodcastOrEpisode, currentSong?.item?.album?.images]);
+  }, [
+    albumId,
+    isPodcastOrEpisode,
+    currentSong?.item?.album?.images
+  ]);
 
   const formatTime = useMemo(() => (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
