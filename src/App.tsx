@@ -24,11 +24,20 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container sx={{ backgroundColor: theme.palette.background.default, p: 1.5 }}>
+      <Container
+        disableGutters
+        maxWidth={false}
+        sx={{
+          minHeight: '100vh',
+          backgroundColor: theme.palette.background.default,
+          display: 'flex',
+          p: 2
+        }}
+      >
         <VibrantProvider>
-          <Box >
+          <Box sx={{ width: '100%' }}>
             {/*<StartPageHeader/>*/}
-            <MainPage></MainPage>
+            <MainPage />
           </Box>
         </VibrantProvider>
       </Container>
