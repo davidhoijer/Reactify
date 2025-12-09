@@ -5,6 +5,8 @@ import AlbumComponent from "./AlbumComponent";
 import {SpotifyUser} from "../types/SpotifyUser";
 import SongProgressComponent from "./SongProgressComponent";
 import {VibrantContext} from "../contexts/VibrantContext";
+import TitleAndArtistComponent from "./TitleAndArtistComponent";
+import Box from "@mui/material/Box";
 
 interface CurrentSongProps {
   userProfile: SpotifyUser | null;
@@ -20,9 +22,9 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  
+
   const {vibrantColours, lightVibrant} = useContext(VibrantContext);
-  
+
   const isPodcastOrEpisode = currentSong?.currently_playing_type === "episode";
 
   // Update base state
@@ -50,7 +52,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
     let cancelled = false;
     const run = async () => {
       try {
-        const { mainVibrant: mv } = await vibrantColours(smallestImageUrl);
+        const {mainVibrant: mv} = await vibrantColours(smallestImageUrl);
         if (!cancelled) {
           albumColorCache.set(albumId, mv);
           setBackgroundColor(mv);
@@ -117,19 +119,30 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
       )}
 
       {currentSong && !isPodcastOrEpisode && (
-        <div className="song-info-box" style={{backgroundColor: lightVibrant, borderRadius: "10px", boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)"}}>
-          
-          {currentSong && !isPodcastOrEpisode && (
-            <AlbumComponent currentSong={currentSong} imgRef={imgRef}/>
-          )}
+        <>
+          <AlbumComponent currentSong={currentSong} imgRef={imgRef}/>
+          <div className="song-info-box"
+               style={{
+                 width: imgRef.current?.width,
+                 height: window.innerWidth > 700 ? imgRef.current?.height : undefined,
+                 backgroundColor: window.innerWidth > 700 ? "transparent" : lightVibrant,
+               }}>
 
-          {currentSong && !isPodcastOrEpisode && (
-            <SongProgressComponent progress={progress} duration={duration} progressPercentage={progressPercentage}
-                                   formatTime={formatTime}/>
-          )}        
-        </div>
+
+              <TitleAndArtistComponent currentSong={currentSong}/>
+
+              <SongProgressComponent 
+                progress={progress} 
+                duration={duration} 
+                progressPercentage={progressPercentage}
+                formatTime={formatTime}/>
+              
+
+          </div>
+        </>
+
+
       )}
-      
 
 
     </div>

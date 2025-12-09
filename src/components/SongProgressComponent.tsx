@@ -13,12 +13,12 @@ interface SongProgressProps {
 const SongProgress: React.FC<SongProgressProps> = ({ progress, duration, progressPercentage, formatTime }) => {
 
   const {darkVibrant, lightVibrant} = useContext(VibrantContext);
-
+  const isWide = window.innerWidth > 700;
   
   return (
     <div className="song-progress">
       <div className="song-timer">
-        <Typography variant='h5' style={{ fontWeight: "bold", color: darkVibrant }}>
+        <Typography variant='h5' style={{ fontWeight: "bold", color: isWide ? lightVibrant : darkVibrant }}>
           <span>{formatTime(progress)}</span> / <span>{formatTime(duration)}</span>
         </Typography>
       </div>

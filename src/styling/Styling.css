@@ -12,6 +12,10 @@
     width: 100%; /* Adjust as necessary */
     height: 100%;
     margin: auto; /* Center horizontally */
+    @media (min-width: 700px) {
+        flex-direction: row;
+        justify-content: space-around;
+    }
 }
 
 /*Album image*/
@@ -20,9 +24,26 @@
     height: 100%;
     border-radius: 10px 10px 0px 0px;
     /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);*/
+    @media (min-width: 700px) {
+        border-radius: 10px 00px 0px 10px;
+    }
 }
 
 /*Song and artist info*/
+
+.song-info-box {
+    box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+    border-radius: 0px 0px 10px 10px;
+
+    @media (min-width: 700px) {
+        display: flex;
+        flex-direction: column;
+        border-radius: 0px 10px 10px 0px;
+        box-shadow: none;
+        justify-content: center;
+    }
+}
+
 .song-info {
     text-align: center;
 }
