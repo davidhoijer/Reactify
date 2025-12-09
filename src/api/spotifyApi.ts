@@ -23,6 +23,7 @@ export async function redirectToAuthCodeFlow() {
 // spotifyApi.ts
 export async function getAccessToken(code: string) {
   const verifier = localStorage.getItem("verifier");
+  console.log(verifier, !verifier);
   if (!code) throw new Error("No code in URL – check REDIRECT_URI and login flow");
   if (!verifier) throw new Error("Missing PKCE verifier – call redirectToAuthCodeFlow() first");
 

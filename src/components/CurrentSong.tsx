@@ -21,7 +21,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   
-  const {mainVibrant, vibrantColours} = useContext(VibrantContext);
+  const {vibrantColours, lightVibrant} = useContext(VibrantContext);
   
   const isPodcastOrEpisode = currentSong?.currently_playing_type === "episode";
 
@@ -116,25 +116,21 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
         </div>
       )}
 
-
       {currentSong && !isPodcastOrEpisode && (
-        <AlbumComponent currentSong={currentSong} imgRef={imgRef}/>
-      )}
+        <div className="song-info-box" style={{backgroundColor: lightVibrant, borderRadius: "10px", boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)"}}>
+          
+          {currentSong && !isPodcastOrEpisode && (
+            <AlbumComponent currentSong={currentSong} imgRef={imgRef}/>
+          )}
 
-      {currentSong && !isPodcastOrEpisode && (
-        <SongProgressComponent progress={progress} duration={duration} progressPercentage={progressPercentage}
-                               formatTime={formatTime}/>
+          {currentSong && !isPodcastOrEpisode && (
+            <SongProgressComponent progress={progress} duration={duration} progressPercentage={progressPercentage}
+                                   formatTime={formatTime}/>
+          )}        
+        </div>
       )}
+      
 
-      {/* <div className="controls">
-        <button className="control-button">⏮️</button>
-        {currentSong?.is_playing ? (
-          <button className="control-button">⏸️</button>
-        ) : (
-          <button className="control-button">▶️</button>
-        )}
-        <button className="control-button">⏭️</button>
-      </div> */}
 
     </div>
   );

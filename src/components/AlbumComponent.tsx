@@ -1,6 +1,7 @@
 import React, {useContext} from 'react';
 import { CurrentSong } from "../types/CurrentSong";
 import {VibrantContext} from "../contexts/VibrantContext";
+import TitleAndArtistComponent from "./TitleAndArtistComponent";
 
 interface AlbumComponentProps {
   currentSong: CurrentSong;
@@ -8,9 +9,6 @@ interface AlbumComponentProps {
 }
 
 const AlbumComponent: React.FC<AlbumComponentProps> = ({ currentSong, imgRef }) => {
-
-  const {darkVibrant} = useContext(VibrantContext);
-  
   return (
     <div>
       <div className="album-art">
@@ -27,9 +25,8 @@ const AlbumComponent: React.FC<AlbumComponentProps> = ({ currentSong, imgRef }) 
           />
         )}
       </div>
-      <div className="song-info">
-        <h2 className="song-title" style={{color: darkVibrant}}>{currentSong?.item.name}</h2>
-        <h3 className="song-artist" style={{color: darkVibrant}}>{currentSong?.item.artists[0].name}</h3>
+      <div>
+        <TitleAndArtistComponent currentSong={currentSong}></TitleAndArtistComponent>
       </div>
     </div>
   );
