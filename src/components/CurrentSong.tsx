@@ -6,7 +6,8 @@ import {SpotifyUser} from "../types/SpotifyUser";
 import SongProgressComponent from "./SongProgressComponent";
 import {VibrantContext} from "../contexts/VibrantContext";
 import TitleAndArtistComponent from "./TitleAndArtistComponent";
-import Box from "@mui/material/Box";
+import {Snackbar} from "@mui/material";
+import {GothenburgStationInfo} from "./stationList";
 
 interface CurrentSongProps {
   userProfile: SpotifyUser | null;
@@ -22,6 +23,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const {vibrantColours, lightVibrant} = useContext(VibrantContext);
 
@@ -120,6 +122,8 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
 
       {currentSong && !isPodcastOrEpisode && (
         <>
+
+          {/*{GothenburgStationInfo()}*/}
           <AlbumComponent currentSong={currentSong} imgRef={imgRef}/>
           <div className="song-info-box"
                style={{
@@ -129,16 +133,36 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
                }}>
 
 
-              <TitleAndArtistComponent currentSong={currentSong}/>
+            <TitleAndArtistComponent currentSong={currentSong}/>
 
-              <SongProgressComponent 
-                progress={progress} 
-                duration={duration} 
-                progressPercentage={progressPercentage}
-                formatTime={formatTime}/>
-              
+            <SongProgressComponent
+              progress={progress}
+              duration={duration}
+              progressPercentage={progressPercentage}
+              formatTime={formatTime}/>
 
+            {/*<div className="controls">*/}
+            {/*  */}
+            {/*  <button className="control-button" onClick={() => setSnackbarOpen(true)} >⏮️</button>*/}
+            {/*  */}
+            {/*  {currentSong?.is_playing ? (*/}
+            {/*    <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏸️</button>*/}
+            {/*  ) : (*/}
+            {/*    <button className="control-button" onClick={() => setSnackbarOpen(true)}>▶️</button>*/}
+            {/*  )}*/}
+            {/*  */}
+            {/*  <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏭️</button>*/}
+            {/*</div>*/}
           </div>
+
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={2000}
+            anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+            color={lightVibrant}
+            onClose={() => setSnackbarOpen(false)}
+            message="no redy jet"
+          />
         </>
 
 
