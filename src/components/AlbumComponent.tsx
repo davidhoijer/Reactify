@@ -9,9 +9,10 @@ interface AlbumComponentProps {
 }
 
 const AlbumComponent: React.FC<AlbumComponentProps> = ({ currentSong, imgRef }) => {
+  const hasAlbumImage = currentSong?.item?.album?.images?.length > 0;
   return (
       <div>
-        {currentSong && currentSong?.item.album.images.length > 0 && (
+        {currentSong && hasAlbumImage && (
           <img
             ref={imgRef}
             src={currentSong.item.album.images[0].url}

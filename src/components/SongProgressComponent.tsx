@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import '../styling/Styling.css';
 import { Typography } from '@mui/material';
 import {VibrantContext} from "../contexts/VibrantContext";
+import Box from "@mui/material/Box";
 
 interface SongProgressProps {
   progress: number;
@@ -16,16 +17,16 @@ const SongProgress: React.FC<SongProgressProps> = ({ progress, duration, progres
   const isWide = window.innerWidth > 700;
   
   return (
-    <div className="song-progress">
-      <div className="song-timer">
+    <Box className="song-progress">
+      <Box className="song-timer">
         <Typography variant='h5' style={{ fontWeight: "bold", color: isWide ? lightVibrant : darkVibrant }}>
           <span>{formatTime(progress)}</span> / <span>{formatTime(duration)}</span>
         </Typography>
-      </div>
-      <div className="progress-container" style={{backgroundColor: darkVibrant}}>
-        <div className="progress-bar" style={{ width: `${progressPercentage}%` , backgroundColor: lightVibrant }} />
-      </div>
-    </div>
+      </Box>
+      <Box className="progress-container" style={{backgroundColor: darkVibrant}}>
+        <Box className="progress-bar" style={{ width: `${progressPercentage}%` , backgroundColor: lightVibrant }} />
+      </Box>
+    </Box>
   );
 };
 

@@ -7,7 +7,8 @@ import SongProgressComponent from "./SongProgressComponent";
 import {VibrantContext} from "../contexts/VibrantContext";
 import TitleAndArtistComponent from "./TitleAndArtistComponent";
 import {Snackbar} from "@mui/material";
-import {GothenburgStationInfo} from "./stationList";
+import {GothenburgStationInfo} from "./StationList";
+import Box from "@mui/material/Box";
 
 interface CurrentSongProps {
   userProfile: SpotifyUser | null;
@@ -125,7 +126,8 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
 
           {/*{GothenburgStationInfo()}*/}
           <AlbumComponent currentSong={currentSong} imgRef={imgRef}/>
-          <div className="song-info-box"
+
+          <Box className="song-info-box"
                style={{
                  width: imgRef.current?.width,
                  height: window.innerWidth > 700 ? imgRef.current?.height : undefined,
@@ -153,7 +155,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
             {/*  */}
             {/*  <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏭️</button>*/}
             {/*</div>*/}
-          </div>
+          </Box>
 
           <Snackbar
             open={snackbarOpen}
