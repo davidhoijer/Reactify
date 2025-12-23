@@ -9,6 +9,7 @@ import TitleAndArtistComponent from "./TitleAndArtistComponent";
 import {Snackbar} from "@mui/material";
 import {GothenburgStationInfo} from "./StationList";
 import Box from "@mui/material/Box";
+import PodcastComponent from "./PodcastComponent";
 
 interface CurrentSongProps {
   userProfile: SpotifyUser | null;
@@ -42,7 +43,10 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
 
   // Get background colour, and cache for same album
   useEffect(() => {
-    if (isPodcastOrEpisode || !albumId || !currentSong?.item?.album?.images?.length) return;
+    if (isPodcastOrEpisode || !albumId || !currentSong?.item?.album?.images?.length) {
+      setBackgroundColor('#323232');
+      return;
+    }
 
     const images = currentSong.item.album.images;
     const smallestImageUrl = images[images.length - 1]?.url || images[0]?.url;
@@ -101,24 +105,9 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
   const progressPercentage = duration > 0 ? (progress / duration) * 100 : 0;
 
   return (
-    <div className="current-song-ui" style={{backgroundColor}}>
-
+    <Box className="current-song-ui" style={{backgroundColor}}>
       {isPodcastOrEpisode && (
-        <div>
-          <div className="podcast-info">
-            <h2 className="podcast-title">A Podcast is Currently Playing</h2>
-            <p className="podcast-message">
-              Enjoy your podcast! Details will be displayed here once available.
-            </p>
-          </div>
-          <div className="podcast-placeholder">
-            <img
-              src="/placeholder-podcast.png"
-              alt="Podcast Placeholder"
-              className="podcast-image"
-            />
-          </div>
-        </div>
+        <PodcastComponent/>
       )}
 
       {currentSong && !isPodcastOrEpisode && (
@@ -166,12 +155,8 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
             message="no redy jet"
           />
         </>
-
-
       )}
-
-
-    </div>
+    </Box>
   );
 };
 

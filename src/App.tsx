@@ -37,7 +37,6 @@ export default function App() {
       >
         <VibrantProvider>
           <Box sx={{ width: '100%' }}>
-            {/*<StartPageHeader/>*/}
             <MainPage />
           </Box>
         </VibrantProvider>
