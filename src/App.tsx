@@ -16,8 +16,9 @@ const theme = createTheme({
       primary: "#ffffff",  // Text color to ensure readability on dark background
     }
   },
-  // typography: {
-  // }
+  typography: {
+    fontFamily: 'Helvetica, Arial, sans-serif',
+  }
 });
 
 export default function App() {
