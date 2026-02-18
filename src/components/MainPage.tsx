@@ -4,10 +4,10 @@ import {
   fetchCurrentSong,
   redirectToAuthCodeFlow,
   getAccessToken,
-  refreshAccessToken
+  refreshAccessToken, fetchUserTopArtists
 } from "../api/spotifyApi";
 import type {SpotifyUser} from "../types/SpotifyUser";
-import type {CurrentSong} from "../types/CurrentSong";
+import {Artist2, CurrentSong} from "../types/CurrentSong";
 import Box from "@mui/material/Box";
 import CurrentSongComponent from "./CurrentSong";
 import {tokenStore} from "../api/apiClient";
@@ -20,6 +20,7 @@ const MAX_BACKOFF_MS = 60000;
 const MainPage: React.FC = () => {
   const [userProfile, setUserProfile] = useState<SpotifyUser | null>(null);
   const [currentSong, setCurrentSong] = useState<CurrentSong | null>(null);
+  const [userTopArtists, setUserTopArtists] = useState<Artist2 | null>(null)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,9 +111,12 @@ const MainPage: React.FC = () => {
         }
 
         // Nu ska vi ha en giltig access-token – hämta data
-        const [profile, song] = await Promise.all([fetchProfile(), fetchCurrentSong()]);
+        const [profile, song, userTopArtists] = await Promise.all([fetchProfile(), fetchCurrentSong(), fetchUserTopArtists()]);
         setUserProfile(profile);
         setCurrentSong(song);
+        setUserTopArtists(userTopArtists);
+        
+        console.log(userTopArtists)
 
         // Starta adaptiv polling
         schedule(nextDelayFor(song));

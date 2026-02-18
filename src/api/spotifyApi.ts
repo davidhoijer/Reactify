@@ -3,6 +3,15 @@ import {CLIENT_ID, REDIRECT_URI, SCOPES} from "./config";
 import {generateCodeVerifier, generateCodeChallenge} from "./pkce";
 import {spotifyFetch, tokenStore} from "./apiClient";
 
+function isInsufficientScopeError(err: unknown) {
+  return err instanceof Error && /insufficient/i.test(err.message);
+}
+
+function reauthForScope() {
+  tokenStore.clear();
+  redirectToAuthCodeFlow();
+}
+
 export async function redirectToAuthCodeFlow() {
   const verifier = generateCodeVerifier();
   const challenge = await generateCodeChallenge(verifier);
@@ -79,15 +88,47 @@ export async function refreshAccessToken(refreshToken: string) {
 export async function fetchProfile() {
   const bag = tokenStore.read();
   if (!bag) throw new Error("No token");
-  const res = await spotifyFetch("https://api.spotify.com/v1/me", {method: "GET"}, bag, () => refreshAccessToken(bag.refreshToken));
-  if (res === null) return null;
-  return res.json();
+  try {
+    const res = await spotifyFetch("https://api.spotify.com/v1/me", {method: "GET"}, bag, () => refreshAccessToken(bag.refreshToken));
+    if (res === null) return null;
+    return res.json();
+  } catch (err) {
+    if (isInsufficientScopeError(err)) {
+      reauthForScope();
+      return null;
+    }
+    throw err;
+  }
 }
 
 export async function fetchCurrentSong() {
   const bag = tokenStore.read();
   if (!bag) throw new Error("No token");
-  const res = await spotifyFetch("https://api.spotify.com/v1/me/player/currently-playing", {method: "GET"}, bag, () => refreshAccessToken(bag.refreshToken));
-  if (res === null) return null; // inget spelas
-  return res.json();
+  try {
+    const res = await spotifyFetch("https://api.spotify.com/v1/me/player/currently-playing", {method: "GET"}, bag, () => refreshAccessToken(bag.refreshToken));
+    if (res === null) return null; // inget spelas
+    return res.json();
+  } catch (err) {
+    if (isInsufficientScopeError(err)) {
+      reauthForScope();
+      return null;
+    }
+    throw err;
+  }
+}
+
+export async function fetchUserTopArtists(){
+  const bag = tokenStore.read();
+  if (!bag) throw new Error("No token");
+  try {
+    const res = await spotifyFetch("https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=5", {method: "GET"}, bag, () => refreshAccessToken(bag.refreshToken));
+    if (res === null) return null;
+    return res.json();
+  } catch (err) {
+    if (isInsufficientScopeError(err)) {
+      reauthForScope();
+      return null;
+    }
+    throw err;
+  }
 }

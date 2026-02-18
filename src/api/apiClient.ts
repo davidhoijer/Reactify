@@ -59,10 +59,34 @@ export async function spotifyFetch(input: RequestInfo, init: RequestInit, bag: T
       headers: {...(init.headers || {}), Authorization: `Bearer ${access_token}`},
     });
     if (res2.status === 204) return null;
-    if (!res2.ok) throw new Error(`Spotify error ${res2.status}`);
+    if (!res2.ok) {
+      if (res2.status === 403) {
+        let msg = "";
+        try {
+          const body = await res2.json();
+          msg = body?.error?.message ?? "";
+        } catch {
+          // ignore parse errors
+        }
+        throw new Error(`Spotify error 403${msg ? `: ${msg}` : ""}`);
+      }
+      throw new Error(`Spotify error ${res2.status}`);
+    }
     return res2;
   }
 
-  if (!res.ok) throw new Error(`Spotify error ${res.status}`);
+  if (!res.ok) {
+    if (res.status === 403) {
+      let msg = "";
+      try {
+        const body = await res.json();
+        msg = body?.error?.message ?? "";
+      } catch {
+        // ignore parse errors
+      }
+      throw new Error(`Spotify error 403${msg ? `: ${msg}` : ""}`);
+    }
+    throw new Error(`Spotify error ${res.status}`);
+  }
   return res;
 }
