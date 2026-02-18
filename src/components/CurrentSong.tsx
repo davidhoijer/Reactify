@@ -9,6 +9,7 @@ import TitleAndArtistComponent from "./TitleAndArtistComponent";
 import {Button, Snackbar, ToggleButton} from "@mui/material";
 import Box from "@mui/material/Box";
 import PodcastComponent from "./PodcastComponent";
+import TopArtists from "./TopArtists";
 
 interface CurrentSongProps {
   userProfile: SpotifyUser | null;
@@ -167,11 +168,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
 
 
       {topArtistsSelected && (
-        <Box className="top-artists-box">
-          {topArtists?.map((item) => (
-            <div key={item.id}>{item.name}</div>
-          ))}
-        </Box>
+        <TopArtists topArtists={topArtists}></TopArtists>
       )}
       
       
