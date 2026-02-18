@@ -2,6 +2,11 @@
 
 A React + TypeScript app that shows your currently playing Spotify track with a color‑adaptive UI based on the album art. It uses Spotify OAuth (PKCE), refresh tokens, and adaptive polling to keep the UI up to date.
 
+
+<img src="src/images/Screenshot 2026-02-18 at 15.33.11.png" alt="Widescreen" width="800">
+
+
+
 ## Features
 - Spotify PKCE login with refresh token handling.
 - Currently playing track UI with album art and color‑extracted theming.
@@ -13,6 +18,11 @@ A React + TypeScript app that shows your currently playing Spotify track with a 
 - React 18 + TypeScript
 - Material UI
 - `node-vibrant` for color extraction
+
+
+<img src="src/images/Screenshot 2026-02-18 at 15.40.58.png" alt="RaspberryPie Screen" height="700">
+
+
 
 ## Getting Started
 
