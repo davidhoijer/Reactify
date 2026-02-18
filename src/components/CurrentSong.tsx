@@ -7,7 +7,6 @@ import SongProgressComponent from "./SongProgressComponent";
 import {VibrantContext} from "../contexts/VibrantContext";
 import TitleAndArtistComponent from "./TitleAndArtistComponent";
 import {Snackbar} from "@mui/material";
-import {GothenburgStationInfo} from "./StationList";
 import Box from "@mui/material/Box";
 import PodcastComponent from "./PodcastComponent";
 
