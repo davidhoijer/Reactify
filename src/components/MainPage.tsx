@@ -20,7 +20,7 @@ const MAX_BACKOFF_MS = 60000;
 const MainPage: React.FC = () => {
   const [userProfile, setUserProfile] = useState<SpotifyUser | null>(null);
   const [currentSong, setCurrentSong] = useState<CurrentSong | null>(null);
-  const [userTopArtists, setUserTopArtists] = useState<Artist2 | null>(null)
+  const [userTopArtists, setUserTopArtists] = useState<Artist2[] | null>(null)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -150,7 +150,7 @@ const MainPage: React.FC = () => {
   if (loading) return <Box>Loading…</Box>;
   if (error) return <Box>Error: {error}</Box>;
   return (
-    <CurrentSongComponent userProfile={userProfile} currentSong={currentSong}/>
+    <CurrentSongComponent userProfile={userProfile} currentSong={currentSong} topArtists={userTopArtists}/>
   );
 };
 

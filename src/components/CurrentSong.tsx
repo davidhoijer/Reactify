@@ -1,23 +1,24 @@
 import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
-import {CurrentSong} from '../types/CurrentSong';
+import {Artist2, CurrentSong} from '../types/CurrentSong';
 import '../styling/Styling.css';
 import AlbumComponent from "./AlbumComponent";
 import {SpotifyUser} from "../types/SpotifyUser";
 import SongProgressComponent from "./SongProgressComponent";
 import {VibrantContext} from "../contexts/VibrantContext";
 import TitleAndArtistComponent from "./TitleAndArtistComponent";
-import {Snackbar} from "@mui/material";
+import {Button, Snackbar, ToggleButton} from "@mui/material";
 import Box from "@mui/material/Box";
 import PodcastComponent from "./PodcastComponent";
 
 interface CurrentSongProps {
   userProfile: SpotifyUser | null;
   currentSong: CurrentSong | null;
+  topArtists: Artist2[] | null;
 }
 
 const albumColorCache = new Map<string, string>();
 
-const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
+const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtists}) => {
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -25,6 +26,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [topArtistsSelected, setTopArtistsSelected] = useState(false);
 
   const {vibrantColours, lightVibrant} = useContext(VibrantContext);
 
@@ -109,10 +111,9 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
         <PodcastComponent/>
       )}
 
-      {currentSong && !isPodcastOrEpisode && (
+      {currentSong && !isPodcastOrEpisode && !topArtistsSelected && (
         <>
 
-          {/*{GothenburgStationInfo()}*/}
           <AlbumComponent currentSong={currentSong} imgRef={imgRef}/>
 
           <Box className="song-info-box"
@@ -155,6 +156,25 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong}) => {
           />
         </>
       )}
+
+      <ToggleButton   
+        value="top-artists"
+        sx={{position: 'fixed', right: '1rem', bottom: '1rem'}}
+        selected={topArtistsSelected}
+        onChange={() => setTopArtistsSelected((topArtistsSelected) => !topArtistsSelected)}>
+        Top 5 artister
+      </ToggleButton>
+
+
+      {topArtistsSelected && (
+        <Box className="top-artists-box">
+          {topArtists?.map((item) => (
+            <div key={item.id}>{item.name}</div>
+          ))}
+        </Box>
+      )}
+      
+      
     </Box>
   );
 };

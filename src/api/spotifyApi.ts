@@ -123,7 +123,8 @@ export async function fetchUserTopArtists(){
   try {
     const res = await spotifyFetch("https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=5", {method: "GET"}, bag, () => refreshAccessToken(bag.refreshToken));
     if (res === null) return null;
-    return res.json();
+    const data = await res.json();
+    return Array.isArray(data?.items) ? data.items : null;
   } catch (err) {
     if (isInsufficientScopeError(err)) {
       reauthForScope();
