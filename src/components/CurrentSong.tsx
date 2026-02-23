@@ -163,7 +163,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
         sx={{position: 'fixed', right: '1rem', bottom: '1rem'}}
         selected={topArtistsSelected}
         onChange={() => setTopArtistsSelected((topArtistsSelected) => !topArtistsSelected)}>
-        Top 5 artister
+        Top 5 artists
       </ToggleButton>
 
 
