@@ -6,10 +6,15 @@ import {SpotifyUser} from "../types/SpotifyUser";
 import SongProgressComponent from "./SongProgressComponent";
 import {VibrantContext} from "../contexts/VibrantContext";
 import TitleAndArtistComponent from "./TitleAndArtistComponent";
-import {Button, Snackbar, ToggleButton} from "@mui/material";
+import {ToggleButton} from "@mui/material";
 import Box from "@mui/material/Box";
+import PlayCircleOutlinedIcon from '@mui/icons-material/PlayCircleOutlined';
+import PauseCircleOutlinedIcon from '@mui/icons-material/PauseCircleOutlined';
+import SkipNextOutlinedIcon from '@mui/icons-material/SkipNextOutlined';
+import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
 import PodcastComponent from "./PodcastComponent";
 import TopArtists from "./TopArtists";
+import {fetchCurrentSong, pauseTrack, playNextTrack, playPreviousTrack, resumeTrack} from "../api/spotifyApi";
 
 interface CurrentSongProps {
   userProfile: SpotifyUser | null;
@@ -26,10 +31,11 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [topArtistsSelected, setTopArtistsSelected] = useState(false);
+  const [actionsSelected, setActionsSelected] = useState(false);
+  
 
-  const {vibrantColours, lightVibrant} = useContext(VibrantContext);
+  const {vibrantColours, lightVibrant, darkVibrant} = useContext(VibrantContext);
 
   const isPodcastOrEpisode = currentSong?.currently_playing_type === "episode";
 
@@ -133,44 +139,54 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
               progressPercentage={progressPercentage}
               formatTime={formatTime}/>
 
-            {/*<div className="controls">*/}
-            {/*  */}
-            {/*  <button className="control-button" onClick={() => setSnackbarOpen(true)} >⏮️</button>*/}
-            {/*  */}
-            {/*  {currentSong?.is_playing ? (*/}
-            {/*    <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏸️</button>*/}
-            {/*  ) : (*/}
-            {/*    <button className="control-button" onClick={() => setSnackbarOpen(true)}>▶️</button>*/}
-            {/*  )}*/}
-            {/*  */}
-            {/*  <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏭️</button>*/}
-            {/*</div>*/}
-          </Box>
+            {actionsSelected && (
+              <div className="controls">
 
-          <Snackbar
-            open={snackbarOpen}
-            autoHideDuration={2000}
-            anchorOrigin={{vertical: 'top', horizontal: 'center'}}
-            color={lightVibrant}
-            onClose={() => setSnackbarOpen(false)}
-            message="no redy jet"
-          />
+                <button className="control-button" onClick={async () => 
+                  await playPreviousTrack().then(fetchCurrentSong)}> <SkipPreviousOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
+
+                {currentSong?.is_playing ? (
+                  <button className="control-button" onClick={async () => await pauseTrack()}> <PauseCircleOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
+                ) : (
+                  <button className="control-button" onClick={async () => 
+                    await resumeTrack().then(fetchCurrentSong)}> <PlayCircleOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
+                )}
+
+                <button className="control-button" onClick={async () => 
+                  await playNextTrack().then(fetchCurrentSong)}> <SkipNextOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
+              </div>
+            )}
+
+          </Box>
         </>
       )}
 
-      <ToggleButton   
-        value="top-artists"
-        sx={{position: 'fixed', right: '1rem', bottom: '1rem'}}
-        selected={topArtistsSelected}
-        onChange={() => setTopArtistsSelected((topArtistsSelected) => !topArtistsSelected)}>
-        Top 5 artists
-      </ToggleButton>
+      <Box position='fixed'>
+        <ToggleButton
+          value="top-artists"
+          sx={{position: 'fixed', right: '1rem', bottom: '1rem'}}
+          selected={topArtistsSelected}
+          onChange={() => setTopArtistsSelected((topArtistsSelected) => !topArtistsSelected)}>
+          Top 5 artists
+        </ToggleButton>
 
+        {!topArtistsSelected && (
+          <ToggleButton
+            className="toggle-control-button"
+            value="actions"
+            sx={{position: 'fixed', right: '9rem', bottom: '1rem'}}
+            selected={actionsSelected}
+            hidden={topArtistsSelected}
+            disabled={topArtistsSelected}
+            onChange={() => setActionsSelected((actionsSelected) => !actionsSelected)}>
+            Controls
+          </ToggleButton>
+        )}
+      </Box>
 
       {topArtistsSelected && (
         <TopArtists topArtists={topArtists}></TopArtists>
       )}
-      
       
     </Box>
   );

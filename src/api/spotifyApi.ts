@@ -133,3 +133,43 @@ export async function fetchUserTopArtists(){
     throw err;
   }
 }
+
+export async function pauseTrack(){
+  const bag = tokenStore.read();
+  if (!bag) throw new Error("No token");
+
+  const res = await spotifyFetch("https://api.spotify.com/v1/me/player/pause", {method: "PUT"}, bag, () => refreshAccessToken(bag.refreshToken));
+  if (res === null) return null;
+
+  return res.json();
+}
+
+export async function resumeTrack(){
+  const bag = tokenStore.read();
+  if (!bag) throw new Error("No token");
+
+  const res = await spotifyFetch("https://api.spotify.com/v1/me/player/play\n", {method: "PUT"}, bag, () => refreshAccessToken(bag.refreshToken));
+  if (res === null) return null;
+
+  return res.json();
+}
+
+export async function playNextTrack(){
+  const bag = tokenStore.read();
+  if (!bag) throw new Error("No token");
+
+  const res = await spotifyFetch("https://api.spotify.com/v1/me/player/next", {method: "POST"}, bag, () => refreshAccessToken(bag.refreshToken));
+  if (res === null) return null;
+  
+  return res.json();
+}
+
+export async function playPreviousTrack(){
+  const bag = tokenStore.read();
+  if (!bag) throw new Error("No token");
+
+  const res = await spotifyFetch("https://api.spotify.com/v1/me/player/previous", {method: "POST"}, bag, () => refreshAccessToken(bag.refreshToken));
+  if (res === null) return null;
+
+  return res.json();
+}
