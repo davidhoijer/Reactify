@@ -138,18 +138,26 @@
     display: flex;
     justify-content: space-around;
     width: 100%;
+    @media (min-width: 700px) {
+        visibility: hidden;
+    }
 }
 
 .control-button {
     background: none;
     border: none;
     color: #fff;
-    font-size: 2em; /* Size of control buttons */
     cursor: pointer;
     transition: transform 0.1s;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
 }
 
 .control-button:hover {
     transform: scale(1.1); /* Slight zoom on hover */
+}
+
+.icon-style {
+    transform: scale(1.8);
 }
   

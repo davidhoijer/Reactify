@@ -8,6 +8,10 @@ import {VibrantContext} from "../contexts/VibrantContext";
 import TitleAndArtistComponent from "./TitleAndArtistComponent";
 import {Snackbar, ToggleButton} from "@mui/material";
 import Box from "@mui/material/Box";
+import PlayCircleOutlinedIcon from '@mui/icons-material/PlayCircleOutlined';
+import PauseCircleOutlinedIcon from '@mui/icons-material/PauseCircleOutlined';
+import SkipNextOutlinedIcon from '@mui/icons-material/SkipNextOutlined';
+import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
 import PodcastComponent from "./PodcastComponent";
 import TopArtists from "./TopArtists";
 import {fetchCurrentSong, pauseTrack, playNextTrack, playPreviousTrack, resumeTrack} from "../api/spotifyApi";
@@ -32,7 +36,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
   const [actionsSelected, setActionsSelected] = useState(false);
   
 
-  const {vibrantColours, lightVibrant} = useContext(VibrantContext);
+  const {vibrantColours, lightVibrant, darkVibrant} = useContext(VibrantContext);
 
   const isPodcastOrEpisode = currentSong?.currently_playing_type === "episode";
 
@@ -140,17 +144,17 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
               <div className="controls">
 
                 <button className="control-button" onClick={async () => 
-                  await playPreviousTrack().then(fetchCurrentSong)}>⏮️</button>
+                  await playPreviousTrack().then(fetchCurrentSong)}> <SkipPreviousOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
 
                 {currentSong?.is_playing ? (
-                  <button className="control-button" onClick={async () => await pauseTrack()}>⏸️</button>
+                  <button className="control-button" onClick={async () => await pauseTrack()}> <PauseCircleOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
                 ) : (
                   <button className="control-button" onClick={async () => 
-                    await resumeTrack().then(fetchCurrentSong)}>▶️</button>
+                    await resumeTrack().then(fetchCurrentSong)}> <PlayCircleOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
                 )}
 
                 <button className="control-button" onClick={async () => 
-                  await playNextTrack().then(fetchCurrentSong)}>⏭️</button>
+                  await playNextTrack().then(fetchCurrentSong)}> <SkipNextOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
               </div>
             )}
 
@@ -167,7 +171,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
         </>
       )}
 
-      <Box>
+      <Box position='fixed'>
         <ToggleButton
           value="top-artists"
           sx={{position: 'fixed', right: '1rem', bottom: '1rem'}}
@@ -188,7 +192,6 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
             Controls
           </ToggleButton>
         )}
-
       </Box>
 
       {topArtistsSelected && (
