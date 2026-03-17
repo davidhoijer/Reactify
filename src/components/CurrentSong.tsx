@@ -10,6 +10,7 @@ import {Snackbar, ToggleButton} from "@mui/material";
 import Box from "@mui/material/Box";
 import PodcastComponent from "./PodcastComponent";
 import TopArtists from "./TopArtists";
+import {fetchCurrentSong, pauseTrack, playNextTrack, playPreviousTrack, resumeTrack} from "../api/spotifyApi";
 
 interface CurrentSongProps {
   userProfile: SpotifyUser | null;
@@ -138,15 +139,18 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
             {actionsSelected && (
               <div className="controls">
 
-                <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏮️</button>
+                <button className="control-button" onClick={async () => 
+                  await playPreviousTrack().then(fetchCurrentSong)}>⏮️</button>
 
                 {currentSong?.is_playing ? (
-                  <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏸️</button>
+                  <button className="control-button" onClick={async () => await pauseTrack()}>⏸️</button>
                 ) : (
-                  <button className="control-button" onClick={() => setSnackbarOpen(true)}>▶️</button>
+                  <button className="control-button" onClick={async () => 
+                    await resumeTrack().then(fetchCurrentSong)}>▶️</button>
                 )}
 
-                <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏭️</button>
+                <button className="control-button" onClick={async () => 
+                  await playNextTrack().then(fetchCurrentSong)}>⏭️</button>
               </div>
             )}
 
