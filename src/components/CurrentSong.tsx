@@ -6,7 +6,7 @@ import {SpotifyUser} from "../types/SpotifyUser";
 import SongProgressComponent from "./SongProgressComponent";
 import {VibrantContext} from "../contexts/VibrantContext";
 import TitleAndArtistComponent from "./TitleAndArtistComponent";
-import {Snackbar, ToggleButton} from "@mui/material";
+import {ToggleButton} from "@mui/material";
 import Box from "@mui/material/Box";
 import PlayCircleOutlinedIcon from '@mui/icons-material/PlayCircleOutlined';
 import PauseCircleOutlinedIcon from '@mui/icons-material/PauseCircleOutlined';
@@ -31,7 +31,6 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [topArtistsSelected, setTopArtistsSelected] = useState(false);
   const [actionsSelected, setActionsSelected] = useState(false);
   
@@ -159,15 +158,6 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
             )}
 
           </Box>
-
-          <Snackbar
-            open={snackbarOpen}
-            autoHideDuration={2000}
-            anchorOrigin={{vertical: 'top', horizontal: 'center'}}
-            color={lightVibrant}
-            onClose={() => setSnackbarOpen(false)}
-            message="no redy jet"
-          />
         </>
       )}
 
@@ -197,10 +187,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
       {topArtistsSelected && (
         <TopArtists topArtists={topArtists}></TopArtists>
       )}
-
-
-
-
+      
     </Box>
   );
 };
