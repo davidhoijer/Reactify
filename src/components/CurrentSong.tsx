@@ -6,7 +6,7 @@ import {SpotifyUser} from "../types/SpotifyUser";
 import SongProgressComponent from "./SongProgressComponent";
 import {VibrantContext} from "../contexts/VibrantContext";
 import TitleAndArtistComponent from "./TitleAndArtistComponent";
-import {Button, Snackbar, ToggleButton} from "@mui/material";
+import {Snackbar, ToggleButton} from "@mui/material";
 import Box from "@mui/material/Box";
 import PodcastComponent from "./PodcastComponent";
 import TopArtists from "./TopArtists";
@@ -28,6 +28,8 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
   const [isPlaying, setIsPlaying] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [topArtistsSelected, setTopArtistsSelected] = useState(false);
+  const [actionsSelected, setActionsSelected] = useState(false);
+  
 
   const {vibrantColours, lightVibrant} = useContext(VibrantContext);
 
@@ -133,18 +135,21 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
               progressPercentage={progressPercentage}
               formatTime={formatTime}/>
 
-            {/*<div className="controls">*/}
-            {/*  */}
-            {/*  <button className="control-button" onClick={() => setSnackbarOpen(true)} >⏮️</button>*/}
-            {/*  */}
-            {/*  {currentSong?.is_playing ? (*/}
-            {/*    <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏸️</button>*/}
-            {/*  ) : (*/}
-            {/*    <button className="control-button" onClick={() => setSnackbarOpen(true)}>▶️</button>*/}
-            {/*  )}*/}
-            {/*  */}
-            {/*  <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏭️</button>*/}
-            {/*</div>*/}
+            {actionsSelected && (
+              <div className="controls">
+
+                <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏮️</button>
+
+                {currentSong?.is_playing ? (
+                  <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏸️</button>
+                ) : (
+                  <button className="control-button" onClick={() => setSnackbarOpen(true)}>▶️</button>
+                )}
+
+                <button className="control-button" onClick={() => setSnackbarOpen(true)}>⏭️</button>
+              </div>
+            )}
+
           </Box>
 
           <Snackbar
@@ -158,20 +163,37 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
         </>
       )}
 
-      <ToggleButton   
-        value="top-artists"
-        sx={{position: 'fixed', right: '1rem', bottom: '1rem'}}
-        selected={topArtistsSelected}
-        onChange={() => setTopArtistsSelected((topArtistsSelected) => !topArtistsSelected)}>
-        Top 5 artists
-      </ToggleButton>
+      <Box>
+        <ToggleButton
+          value="top-artists"
+          sx={{position: 'fixed', right: '1rem', bottom: '1rem'}}
+          selected={topArtistsSelected}
+          onChange={() => setTopArtistsSelected((topArtistsSelected) => !topArtistsSelected)}>
+          Top 5 artists
+        </ToggleButton>
 
+        {!topArtistsSelected && (
+          <ToggleButton
+            className="toggle-control-button"
+            value="actions"
+            sx={{position: 'fixed', right: '9rem', bottom: '1rem'}}
+            selected={actionsSelected}
+            hidden={topArtistsSelected}
+            disabled={topArtistsSelected}
+            onChange={() => setActionsSelected((actionsSelected) => !actionsSelected)}>
+            Controls
+          </ToggleButton>
+        )}
+
+      </Box>
 
       {topArtistsSelected && (
         <TopArtists topArtists={topArtists}></TopArtists>
       )}
-      
-      
+
+
+
+
     </Box>
   );
 };

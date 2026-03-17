@@ -127,6 +127,13 @@
 }
 
 /*Buttons to add in future?*/
+
+.toggle-control-button {
+    @media (min-width: 700px) {
+        visibility: hidden;
+    }
+}
+
 .controls {
     display: flex;
     justify-content: space-around;
