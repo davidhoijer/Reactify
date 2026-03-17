@@ -18,31 +18,23 @@ const TopArtists: React.FC<TopArtistsProps> = ({topArtists}) => {
         Top Artists last 4 weeks:
       </h2>
 
-      {topArtists?.map((item, index: number) => (
-        <Box>
-          <Typography variant={'h6'} key={item.id} style={{color: lightVibrant}}>{index + 1}. {item.name}</Typography>
-          <img src={item.images[0].url} 
-               alt={item.name} 
-               decoding="async" 
-               loading="lazy"
-               height={'142px'}
-          />
-        </Box>
-        
-      ))}
+      <Box>
+        {topArtists?.map((item, index: number) => (
+          <Box style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem'}}>
+            <Typography noWrap variant={'h6'} key={item.id} style={{color: lightVibrant, width: '142px'}}>{index + 1}. {item.name}</Typography>
+            <img src={item.images[0].url}
+                 alt={item.name}
+                 decoding="async"
+                 loading="lazy"
+                 width={'142px'}
+            />
+          </Box>
+
+        ))}
+      </Box>
+
     
     </Box>
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   
   );
 };
