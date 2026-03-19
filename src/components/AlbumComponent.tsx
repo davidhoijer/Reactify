@@ -1,7 +1,5 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import { CurrentSong } from "../types/CurrentSong";
-import {VibrantContext} from "../contexts/VibrantContext";
-import TitleAndArtistComponent from "./TitleAndArtistComponent";
 import Box from "@mui/material/Box";
 
 interface AlbumComponentProps {
@@ -12,7 +10,7 @@ interface AlbumComponentProps {
 const AlbumComponent: React.FC<AlbumComponentProps> = ({ currentSong, imgRef }) => {
   const hasAlbumImage = currentSong?.item?.album?.images?.length > 0;
   return (
-      <Box>
+      <Box className="album-image-box">
         {currentSong && hasAlbumImage && (
           <img
             ref={imgRef}

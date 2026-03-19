@@ -125,8 +125,6 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
 
           <Box className="song-info-box"
                style={{
-                 width: imgRef.current?.width,
-                 height: window.innerWidth > 700 ? imgRef.current?.height : undefined,
                  backgroundColor: window.innerWidth > 700 ? "transparent" : lightVibrant,
                }}>
 
