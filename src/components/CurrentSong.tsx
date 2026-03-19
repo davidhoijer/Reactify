@@ -146,6 +146,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback
 
       <Box position='fixed'>
         <ToggleButton
+          className="toggle-top-artists-button"
           value="top-artists"
           sx={{position: 'fixed', right: '1rem', bottom: '1rem'}}
           selected={topArtistsSelected}

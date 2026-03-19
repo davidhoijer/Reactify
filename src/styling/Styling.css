@@ -156,6 +156,12 @@
     }
 }
 
+.toggle-top-artists-button {
+    @media (min-width: 700px) {
+        visibility: hidden;
+    }
+}
+
 .controls {
     display: flex;
     justify-content: space-around;
