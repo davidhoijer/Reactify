@@ -4,16 +4,14 @@ import Box from "@mui/material/Box";
 
 interface AlbumComponentProps {
   currentSong: CurrentSong;
-  imgRef: React.RefObject<HTMLImageElement>;
 }
 
-const AlbumComponent: React.FC<AlbumComponentProps> = ({ currentSong, imgRef }) => {
+const AlbumComponent: React.FC<AlbumComponentProps> = ({ currentSong }) => {
   const hasAlbumImage = currentSong?.item?.album?.images?.length > 0;
   return (
       <Box className="album-image-box">
         {currentSong && hasAlbumImage && (
           <img
-            ref={imgRef}
             src={currentSong.item.album.images[0].url}
             alt={currentSong.item.album.name}
             decoding="async"

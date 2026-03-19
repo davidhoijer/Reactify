@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {Artist2, CurrentSong} from '../types/CurrentSong';
 import '../styling/Styling.css';
 import AlbumComponent from "./AlbumComponent";
@@ -16,21 +16,24 @@ import PodcastComponent from "./PodcastComponent";
 import TopArtists from "./TopArtists";
 import {fetchCurrentSong, pauseTrack, playNextTrack, playPreviousTrack, resumeTrack} from "../api/spotifyApi";
 
+export interface PlaybackState {
+  durationMs: number;
+  progressMs: number;
+  isPlaying: boolean;
+  syncedAt: number;
+}
+
 interface CurrentSongProps {
   userProfile: SpotifyUser | null;
   currentSong: CurrentSong | null;
+  playback: PlaybackState | null;
   topArtists: Artist2[] | null;
 }
 
 const albumColorCache = new Map<string, string>();
 
-const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtists}) => {
+const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback, topArtists}) => {
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
-  const imgRef = useRef<HTMLImageElement>(null);
-
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [topArtistsSelected, setTopArtistsSelected] = useState(false);
   const [actionsSelected, setActionsSelected] = useState(false);
   
@@ -38,26 +41,20 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
   const {vibrantColours, lightVibrant, darkVibrant} = useContext(VibrantContext);
 
   const isPodcastOrEpisode = currentSong?.currently_playing_type === "episode";
-
-  // Update base state
-  useEffect(() => {
-    if (!currentSong || isPodcastOrEpisode) return;
-    setProgress(currentSong.progress_ms || 0);
-    setDuration(currentSong.item?.duration_ms || 0);
-    setIsPlaying(currentSong.is_playing);
-  }, [currentSong, isPodcastOrEpisode]);
   const albumId = currentSong?.item?.album?.id;
+  const smallestImageUrl = useMemo(() => {
+    const images = currentSong?.item?.album?.images;
+    if (!images?.length) return null;
+    return images[images.length - 1]?.url || images[0]?.url;
+  }, [currentSong?.item?.album?.images]);
 
 
   // Get background colour, and cache for same album
   useEffect(() => {
-    if (isPodcastOrEpisode || !albumId || !currentSong?.item?.album?.images?.length) {
+    if (isPodcastOrEpisode || !albumId || !smallestImageUrl) {
       setBackgroundColor('#323232');
       return;
     }
-
-    const images = currentSong.item.album.images;
-    const smallestImageUrl = images[images.length - 1]?.url || images[0]?.url;
 
     if (albumColorCache.has(albumId)) {
       setBackgroundColor(albumColorCache.get(albumId)!);
@@ -85,7 +82,8 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
   }, [
     albumId,
     isPodcastOrEpisode,
-    currentSong?.item?.album?.images
+    smallestImageUrl,
+    vibrantColours,
   ]);
 
   const formatTime = useMemo(() => (milliseconds: number) => {
@@ -94,23 +92,6 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
     const seconds = totalSeconds % 60;
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }, []);
-
-  // Update progress every second if the song is playing
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setProgress(prevProgress => {
-          return Math.min(prevProgress + 1000, duration);
-        });
-      }, 1000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isPlaying, duration]);
-
-  const progressPercentage = duration > 0 ? (progress / duration) * 100 : 0;
 
   return (
     <Box className="current-song-ui" style={{backgroundColor}}>
@@ -121,7 +102,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
       {currentSong && !isPodcastOrEpisode && !topArtistsSelected && (
         <>
 
-          <AlbumComponent currentSong={currentSong} imgRef={imgRef}/>
+          <AlbumComponent currentSong={currentSong}/>
 
           <Box className="song-info-box"
                style={{
@@ -131,11 +112,15 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
 
             <TitleAndArtistComponent currentSong={currentSong}/>
 
-            <SongProgressComponent
-              progress={progress}
-              duration={duration}
-              progressPercentage={progressPercentage}
-              formatTime={formatTime}/>
+            {playback && (
+              <SongProgressComponent
+                duration={playback.durationMs}
+                initialProgress={playback.progressMs}
+                isPlaying={playback.isPlaying}
+                syncedAt={playback.syncedAt}
+                formatTime={formatTime}
+              />
+            )}
 
             {actionsSelected && (
               <div className="controls">
@@ -143,7 +128,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, topArtis
                 <button className="control-button" onClick={async () => 
                   await playPreviousTrack().then(fetchCurrentSong)}> <SkipPreviousOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
 
-                {currentSong?.is_playing ? (
+                {playback?.isPlaying ? (
                   <button className="control-button" onClick={async () => await pauseTrack()}> <PauseCircleOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
                 ) : (
                   <button className="control-button" onClick={async () => 

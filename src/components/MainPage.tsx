@@ -9,17 +9,40 @@ import {
 import type {SpotifyUser} from "../types/SpotifyUser";
 import {Artist2, CurrentSong} from "../types/CurrentSong";
 import Box from "@mui/material/Box";
-import CurrentSongComponent from "./CurrentSong";
+import CurrentSongComponent, {PlaybackState} from "./CurrentSong";
 import {tokenStore} from "../api/apiClient";
 
-const FAST_MS = 1000;      // spelar
-const PAUSED_MS = 7000;    // paus/podcast
-const IDLE_MS = 45000;     // inget spelas
+const FAST_POLLRATE_MS = 1000;      // Song is playing
+const PAUSED_POLLRATE_MS = 7000;    // Song or podcast is paused
+const IDLE_POLLRATE_MS = 45000;     // Nothing is playing
 const MAX_BACKOFF_MS = 60000;
+
+function isSameTrack(prev: CurrentSong | null, next: CurrentSong | null): boolean {
+  if (prev === next) return true;
+  if (!prev || !next) return false;
+  return (
+    prev.currently_playing_type === next.currently_playing_type &&
+    prev.item?.id === next.item?.id &&
+    prev.item?.album?.id === next.item?.album?.id &&
+    prev.item?.album?.images?.[0]?.url === next.item?.album?.images?.[0]?.url
+  );
+}
+
+function playbackFromSong(song: CurrentSong | null): PlaybackState | null {
+  if (!song) return null;
+
+  return {
+    durationMs: song.item?.duration_ms ?? 0,
+    progressMs: song.progress_ms ?? 0,
+    isPlaying: song.is_playing,
+    syncedAt: Date.now(),
+  };
+}
 
 const MainPage: React.FC = () => {
   const [userProfile, setUserProfile] = useState<SpotifyUser | null>(null);
   const [currentSong, setCurrentSong] = useState<CurrentSong | null>(null);
+  const [playback, setPlayback] = useState<PlaybackState | null>(null);
   const [userTopArtists, setUserTopArtists] = useState<Artist2[] | null>(null)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,9 +66,9 @@ const MainPage: React.FC = () => {
   };
 
   const nextDelayFor = (song: CurrentSong | null): number => {
-    if (!song) return IDLE_MS;
-    if (song.currently_playing_type === "track" && song.is_playing) return FAST_MS;
-    return PAUSED_MS; // pausad track eller podcast/episode
+    if (!song) return IDLE_POLLRATE_MS;
+    if (song.currently_playing_type === "track" && song.is_playing) return FAST_POLLRATE_MS;
+    return PAUSED_POLLRATE_MS; // pausad track eller podcast/episode
   };
 
   const schedule = (ms: number) => {
@@ -58,7 +81,8 @@ const MainPage: React.FC = () => {
     if (stopRef.current || document.hidden) return;
     try {
       const song = await fetchCurrentSong();
-      setCurrentSong(song);
+      setCurrentSong((prev) => (isSameTrack(prev, song) ? prev : song));
+      setPlayback(playbackFromSong(song));
 
       // Nollställ fel-backoff på lyckad hämtning
       errorBackoffRef.current = 0;
@@ -91,7 +115,6 @@ const MainPage: React.FC = () => {
         if (!bag && code) {
           // Första inloggningen (PKCE code exchange)
           await getAccessToken(code);
-          // Ta bort ?code för att undvika dubbel-exchange vid refresh
           const cleanUrl = window.location.origin + window.location.pathname;
           window.history.replaceState({}, document.title, cleanUrl);
         } else if (bag) {
@@ -114,9 +137,8 @@ const MainPage: React.FC = () => {
         const [profile, song, userTopArtists] = await Promise.all([fetchProfile(), fetchCurrentSong(), fetchUserTopArtists()]);
         setUserProfile(profile);
         setCurrentSong(song);
+        setPlayback(playbackFromSong(song));
         setUserTopArtists(userTopArtists);
-        
-        console.log(userTopArtists)
 
         // Starta adaptiv polling
         schedule(nextDelayFor(song));
@@ -150,7 +172,12 @@ const MainPage: React.FC = () => {
   if (loading) return <Box>Loading…</Box>;
   if (error) return <Box>Error: {error}</Box>;
   return (
-    <CurrentSongComponent userProfile={userProfile} currentSong={currentSong} topArtists={userTopArtists}/>
+    <CurrentSongComponent
+      userProfile={userProfile}
+      currentSong={currentSong}
+      playback={playback}
+      topArtists={userTopArtists}
+    />
   );
 };
 
