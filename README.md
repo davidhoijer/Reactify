@@ -23,8 +23,8 @@ A React + TypeScript app that shows your currently playing Spotify track with a 
 
 
 <p>
-  <img src="src/images/small1.png" alt="RaspberryPie Screen" height="700">
-  <img src="src/images/small2.png" alt="RaspberryPie Screen" height="700">
+  <img src="src/images/phuture-small.png" alt="RaspberryPie Screen" height="700">
+  <img src="src/images/seven-small.png" alt="RaspberryPie Screen" height="700">
 </p>
 
 

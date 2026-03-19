@@ -15,6 +15,7 @@ import {tokenStore} from "../api/apiClient";
 const FAST_POLLRATE_MS = 1000;      // Song is playing
 const PAUSED_POLLRATE_MS = 7000;    // Song or podcast is paused
 const IDLE_POLLRATE_MS = 45000;     // Nothing is playing
+const EMPTY_RECHECK_MS = 1500;      // Quick retry after a transient 204
 const MAX_BACKOFF_MS = 60000;
 
 function isSameTrack(prev: CurrentSong | null, next: CurrentSong | null): boolean {
@@ -50,6 +51,8 @@ const MainPage: React.FC = () => {
   const stopRef = useRef(false);
   const timeoutRef = useRef<number | null>(null);
   const errorBackoffRef = useRef<number>(0); // i ms
+  const emptyPlaybackCountRef = useRef<number>(0);
+  const currentSongRef = useRef<CurrentSong | null>(null);
 
   const clearTimer = () => {
     if (timeoutRef.current !== null) {
@@ -81,13 +84,37 @@ const MainPage: React.FC = () => {
     if (stopRef.current || document.hidden) return;
     try {
       const song = await fetchCurrentSong();
-      setCurrentSong((prev) => (isSameTrack(prev, song) ? prev : song));
-      setPlayback(playbackFromSong(song));
+
+      if (song) {
+        emptyPlaybackCountRef.current = 0;
+        setCurrentSong((prev) => {
+          const nextSong = isSameTrack(prev, song) ? prev : song;
+          currentSongRef.current = nextSong;
+          return nextSong;
+        });
+        setPlayback(playbackFromSong(song));
+        schedule(nextDelayFor(song));
+        errorBackoffRef.current = 0;
+        return;
+      }
+
+      emptyPlaybackCountRef.current += 1;
+
+      // Spotify can briefly return 204 at track boundaries before the next item appears.
+      if (currentSongRef.current && emptyPlaybackCountRef.current === 1) {
+        errorBackoffRef.current = 0;
+        schedule(EMPTY_RECHECK_MS);
+        return;
+      }
+
+      currentSongRef.current = null;
+      setCurrentSong(null);
+      setPlayback(null);
 
       // Nollställ fel-backoff på lyckad hämtning
       errorBackoffRef.current = 0;
 
-      schedule(nextDelayFor(song));
+      schedule(nextDelayFor(null));
     } catch (e) {
       console.error("Error fetching current song:", e);
       // Exponentiell backoff vid fel
@@ -137,6 +164,7 @@ const MainPage: React.FC = () => {
         const [profile, song, userTopArtists] = await Promise.all([fetchProfile(), fetchCurrentSong(), fetchUserTopArtists()]);
         setUserProfile(profile);
         setCurrentSong(song);
+        currentSongRef.current = song;
         setPlayback(playbackFromSong(song));
         setUserTopArtists(userTopArtists);
 
