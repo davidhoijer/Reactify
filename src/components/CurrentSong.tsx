@@ -1,96 +1,31 @@
-import React, {useContext, useEffect, useMemo, useState} from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import {Artist2, CurrentSong} from '../types/CurrentSong';
 import '../styling/Styling.css';
-import AlbumComponent from "./AlbumComponent";
-import {SpotifyUser} from "../types/SpotifyUser";
-import SongProgressComponent from "./SongProgressComponent";
-import {VibrantContext, VibrantPalette} from "../contexts/VibrantContext";
-import TitleAndArtistComponent from "./TitleAndArtistComponent";
+import {VibrantContext} from "../contexts/VibrantContext";
 import {ToggleButton} from "@mui/material";
 import Box from "@mui/material/Box";
-import PlayCircleOutlinedIcon from '@mui/icons-material/PlayCircleOutlined';
-import PauseCircleOutlinedIcon from '@mui/icons-material/PauseCircleOutlined';
-import SkipNextOutlinedIcon from '@mui/icons-material/SkipNextOutlined';
-import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
 import PodcastComponent from "./PodcastComponent";
 import TopArtists from "./TopArtists";
-import {fetchCurrentSong, pauseTrack, playNextTrack, playPreviousTrack, resumeTrack} from "../api/spotifyApi";
 import {useIsWideViewport} from "../hooks/useIsWideViewport";
-
-export interface PlaybackState {
-  durationMs: number;
-  progressMs: number;
-  isPlaying: boolean;
-  syncedAt: number;
-}
+import {useAlbumVibrantPalette} from "../hooks/useAlbumVibrantPalette";
+import TrackPlayback from "./TrackPlayback";
+import type {PlaybackState} from "../types/PlaybackState";
 
 interface CurrentSongProps {
-  userProfile: SpotifyUser | null;
   currentSong: CurrentSong | null;
   playback: PlaybackState | null;
   topArtists: Artist2[] | null;
 }
 
-const albumPaletteCache = new Map<string, VibrantPalette>();
-
 const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback, topArtists}) => {
-  const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
   const [topArtistsSelected, setTopArtistsSelected] = useState(false);
   const [actionsSelected, setActionsSelected] = useState(false);
-  
 
-  const {vibrantColours, setVibrantPalette, lightVibrant, darkVibrant} = useContext(VibrantContext);
+  const {lightVibrant, darkVibrant} = useContext(VibrantContext);
+  const backgroundColor = useAlbumVibrantPalette(currentSong);
   const isWideViewport = useIsWideViewport();
 
   const isPodcastOrEpisode = currentSong?.currently_playing_type === "episode";
-  const albumId = currentSong?.item?.album?.id;
-  const smallestImageUrl = useMemo(() => {
-    const images = currentSong?.item?.album?.images;
-    if (!images?.length) return null;
-    return images[images.length - 1]?.url || images[0]?.url;
-  }, [currentSong?.item?.album?.images]);
-
-
-  // Get album colours, and cache for same album
-  useEffect(() => {
-    if (isPodcastOrEpisode || !albumId || !smallestImageUrl) {
-      setBackgroundColor('#323232');
-      return;
-    }
-
-    const cachedPalette = albumPaletteCache.get(albumId);
-    if (cachedPalette) {
-      setVibrantPalette(cachedPalette);
-      setBackgroundColor(cachedPalette.mainVibrant);
-      return;
-    }
-
-    let cancelled = false;
-    const run = async () => {
-      try {
-        const palette = await vibrantColours(smallestImageUrl);
-        if (!cancelled) {
-          albumPaletteCache.set(albumId, palette);
-          setVibrantPalette(palette);
-          setBackgroundColor(palette.mainVibrant);
-        }
-      } catch {
-        if (!cancelled) setBackgroundColor('#ffffff');
-      }
-    };
-    // Skjut Vibrant till slutet av framkörningen så texten redan hunnit visas
-    (window.requestIdleCallback ?? window.setTimeout)(run);
-
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    albumId,
-    isPodcastOrEpisode,
-    smallestImageUrl,
-    setVibrantPalette,
-    vibrantColours,
-  ]);
 
   const formatTime = useMemo(() => (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
@@ -106,48 +41,15 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback
       )}
 
       {currentSong && !isPodcastOrEpisode && !topArtistsSelected && (
-        <>
-
-          <AlbumComponent currentSong={currentSong}/>
-
-          <Box className="song-info-box"
-               style={{
-                 backgroundColor: isWideViewport ? "transparent" : lightVibrant,
-               }}>
-
-
-            <TitleAndArtistComponent currentSong={currentSong}/>
-
-            {playback && (
-              <SongProgressComponent
-                duration={playback.durationMs}
-                initialProgress={playback.progressMs}
-                isPlaying={playback.isPlaying}
-                syncedAt={playback.syncedAt}
-                formatTime={formatTime}
-              />
-            )}
-
-            {actionsSelected && (
-              <div className="controls">
-
-                <button className="control-button" onClick={async () => 
-                  await playPreviousTrack().then(fetchCurrentSong)}> <SkipPreviousOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
-
-                {playback?.isPlaying ? (
-                  <button className="control-button" onClick={async () => await pauseTrack()}> <PauseCircleOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
-                ) : (
-                  <button className="control-button" onClick={async () => 
-                    await resumeTrack().then(fetchCurrentSong)}> <PlayCircleOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
-                )}
-
-                <button className="control-button" onClick={async () => 
-                  await playNextTrack().then(fetchCurrentSong)}> <SkipNextOutlinedIcon className="icon-style" htmlColor={darkVibrant}/> </button>
-              </div>
-            )}
-
-          </Box>
-        </>
+        <TrackPlayback
+          actionsSelected={actionsSelected}
+          controlsColor={darkVibrant}
+          currentSong={currentSong}
+          formatTime={formatTime}
+          isWideViewport={isWideViewport}
+          mobilePanelColor={lightVibrant}
+          playback={playback}
+        />
       )}
 
       <Box position='fixed'>

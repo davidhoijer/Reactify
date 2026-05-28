@@ -15,7 +15,6 @@ const MainPage: React.FC = () => {
   if (error) return <Box>Error: {error}</Box>;
   return (
     <CurrentSongComponent
-      userProfile={session.userProfile}
       currentSong={playbackState.currentSong}
       playback={playbackState.playback}
       topArtists={session.topArtists}

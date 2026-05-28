@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {fetchCurrentSong} from "../api/spotifyApi";
 import type {CurrentSong} from "../types/CurrentSong";
-import type {PlaybackState} from "../components/CurrentSong";
+import type {PlaybackState} from "../types/PlaybackState";
 
 const FAST_POLLRATE_MS = 1000;
 const PAUSED_POLLRATE_MS = 7000;
