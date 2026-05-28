@@ -4,7 +4,7 @@ import '../styling/Styling.css';
 import AlbumComponent from "./AlbumComponent";
 import {SpotifyUser} from "../types/SpotifyUser";
 import SongProgressComponent from "./SongProgressComponent";
-import {VibrantContext} from "../contexts/VibrantContext";
+import {VibrantContext, VibrantPalette} from "../contexts/VibrantContext";
 import TitleAndArtistComponent from "./TitleAndArtistComponent";
 import {ToggleButton} from "@mui/material";
 import Box from "@mui/material/Box";
@@ -30,7 +30,7 @@ interface CurrentSongProps {
   topArtists: Artist2[] | null;
 }
 
-const albumColorCache = new Map<string, string>();
+const albumPaletteCache = new Map<string, VibrantPalette>();
 
 const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback, topArtists}) => {
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
@@ -38,7 +38,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback
   const [actionsSelected, setActionsSelected] = useState(false);
   
 
-  const {vibrantColours, lightVibrant, darkVibrant} = useContext(VibrantContext);
+  const {vibrantColours, setVibrantPalette, lightVibrant, darkVibrant} = useContext(VibrantContext);
 
   const isPodcastOrEpisode = currentSong?.currently_playing_type === "episode";
   const albumId = currentSong?.item?.album?.id;
@@ -49,25 +49,28 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback
   }, [currentSong?.item?.album?.images]);
 
 
-  // Get background colour, and cache for same album
+  // Get album colours, and cache for same album
   useEffect(() => {
     if (isPodcastOrEpisode || !albumId || !smallestImageUrl) {
       setBackgroundColor('#323232');
       return;
     }
 
-    if (albumColorCache.has(albumId)) {
-      setBackgroundColor(albumColorCache.get(albumId)!);
+    const cachedPalette = albumPaletteCache.get(albumId);
+    if (cachedPalette) {
+      setVibrantPalette(cachedPalette);
+      setBackgroundColor(cachedPalette.mainVibrant);
       return;
     }
 
     let cancelled = false;
     const run = async () => {
       try {
-        const {mainVibrant: mv} = await vibrantColours(smallestImageUrl);
+        const palette = await vibrantColours(smallestImageUrl);
         if (!cancelled) {
-          albumColorCache.set(albumId, mv);
-          setBackgroundColor(mv);
+          albumPaletteCache.set(albumId, palette);
+          setVibrantPalette(palette);
+          setBackgroundColor(palette.mainVibrant);
         }
       } catch {
         if (!cancelled) setBackgroundColor('#ffffff');
@@ -83,6 +86,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback
     albumId,
     isPodcastOrEpisode,
     smallestImageUrl,
+    setVibrantPalette,
     vibrantColours,
   ]);
 
