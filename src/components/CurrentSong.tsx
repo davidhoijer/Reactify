@@ -15,6 +15,7 @@ import SkipPreviousOutlinedIcon from '@mui/icons-material/SkipPreviousOutlined';
 import PodcastComponent from "./PodcastComponent";
 import TopArtists from "./TopArtists";
 import {fetchCurrentSong, pauseTrack, playNextTrack, playPreviousTrack, resumeTrack} from "../api/spotifyApi";
+import {useIsWideViewport} from "../hooks/useIsWideViewport";
 
 export interface PlaybackState {
   durationMs: number;
@@ -39,6 +40,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback
   
 
   const {vibrantColours, setVibrantPalette, lightVibrant, darkVibrant} = useContext(VibrantContext);
+  const isWideViewport = useIsWideViewport();
 
   const isPodcastOrEpisode = currentSong?.currently_playing_type === "episode";
   const albumId = currentSong?.item?.album?.id;
@@ -110,7 +112,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback
 
           <Box className="song-info-box"
                style={{
-                 backgroundColor: window.innerWidth > 700 ? "transparent" : lightVibrant,
+                 backgroundColor: isWideViewport ? "transparent" : lightVibrant,
                }}>
 
 

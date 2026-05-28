@@ -3,6 +3,7 @@ import '../styling/Styling.css';
 import { Typography } from '@mui/material';
 import {VibrantContext} from "../contexts/VibrantContext";
 import Box from "@mui/material/Box";
+import {useIsWideViewport} from "../hooks/useIsWideViewport";
 
 interface SongProgressProps {
   duration: number;
@@ -16,7 +17,7 @@ const SongProgress: React.FC<SongProgressProps> = ({ duration, initialProgress, 
 
   const {darkVibrant, lightVibrant} = useContext(VibrantContext);
   const [now, setNow] = useState(() => Date.now());
-  const isWide = window.innerWidth > 700;
+  const isWideViewport = useIsWideViewport();
 
   useEffect(() => {
     setNow(Date.now());
@@ -41,7 +42,7 @@ const SongProgress: React.FC<SongProgressProps> = ({ duration, initialProgress, 
   return (
     <Box className="song-progress">
       <Box className="song-timer">
-        <Typography variant='h5' style={{ fontWeight: "bold", color: isWide ? lightVibrant : darkVibrant }}>
+        <Typography variant='h5' style={{ fontWeight: "bold", color: isWideViewport ? lightVibrant : darkVibrant }}>
           <span>{formatTime(progress)}</span> / <span>{formatTime(duration)}</span>
         </Typography>
       </Box>
