@@ -10,15 +10,26 @@ import {useIsWideViewport} from "../hooks/useIsWideViewport";
 import {useAlbumVibrantPalette} from "../hooks/useAlbumVibrantPalette";
 import TrackPlayback from "./TrackPlayback";
 import type {PlaybackState} from "../types/PlaybackState";
+import AccountMenu from "./AccountMenu";
+import type {SpotifyUser} from "../types/SpotifyUser";
 
 interface CurrentSongProps {
   currentSong: CurrentSong | null;
   playback: PlaybackState | null;
   refreshPlayback: () => Promise<void>;
   topArtists: Artist2[] | null;
+  userProfile: SpotifyUser | null;
+  onLogout: () => void;
 }
 
-const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback, refreshPlayback, topArtists}) => {
+const CurrentSongComponent: React.FC<CurrentSongProps> = ({
+  currentSong,
+  playback,
+  refreshPlayback,
+  topArtists,
+  userProfile,
+  onLogout,
+}) => {
   const [topArtistsSelected, setTopArtistsSelected] = useState(false);
   const [actionsSelected, setActionsSelected] = useState(false);
 
@@ -54,11 +65,17 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback
         />
       )}
 
-      <Box position='fixed'>
+      <Box className="mobile-actions">
+        <Box className="account-menu-container">
+          <AccountMenu
+            userProfile={userProfile}
+            onRefresh={refreshPlayback}
+            onLogout={onLogout}
+          />
+        </Box>
         <ToggleButton
           className="toggle-top-artists-button"
           value="top-artists"
-          sx={{position: 'fixed', right: '1rem', bottom: '1rem'}}
           selected={topArtistsSelected}
           onChange={() => setTopArtistsSelected((topArtistsSelected) => !topArtistsSelected)}>
           Top 5 artists
@@ -68,7 +85,6 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback
           <ToggleButton
             className="toggle-control-button"
             value="actions"
-            sx={{position: 'fixed', right: '9rem', bottom: '1rem'}}
             selected={actionsSelected}
             hidden={topArtistsSelected}
             disabled={topArtistsSelected}

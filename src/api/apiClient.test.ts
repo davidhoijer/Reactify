@@ -1,4 +1,4 @@
-import {spotifyFetch, tokenStore} from "./apiClient";
+import {clearSpotifySession, spotifyFetch, tokenStore} from "./apiClient";
 
 describe("tokenStore", () => {
   beforeEach(() => localStorage.clear());
@@ -14,6 +14,17 @@ describe("tokenStore", () => {
       expiresAt: 1_045_000,
     });
     jest.restoreAllMocks();
+  });
+
+  it("clears all session credentials", () => {
+    localStorage.setItem("access_token", "access");
+    localStorage.setItem("refresh_token", "refresh");
+    localStorage.setItem("token_expiry_time", "123");
+    localStorage.setItem("verifier", "verifier");
+
+    clearSpotifySession();
+
+    expect(localStorage.length).toBe(0);
   });
 });
 
