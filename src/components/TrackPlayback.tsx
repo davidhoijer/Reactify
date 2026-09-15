@@ -15,6 +15,7 @@ interface TrackPlaybackProps {
   isWideViewport: boolean;
   mobilePanelColor: string;
   playback: PlaybackState | null;
+  refreshPlayback: () => Promise<void>;
 }
 
 const TrackPlayback: React.FC<TrackPlaybackProps> = ({
@@ -25,6 +26,7 @@ const TrackPlayback: React.FC<TrackPlaybackProps> = ({
   isWideViewport,
   mobilePanelColor,
   playback,
+  refreshPlayback,
 }) => (
   <>
     <AlbumComponent currentSong={currentSong}/>
@@ -51,6 +53,7 @@ const TrackPlayback: React.FC<TrackPlaybackProps> = ({
         <PlaybackControls
           iconColor={controlsColor}
           playback={playback}
+          refreshPlayback={refreshPlayback}
         />
       )}
     </Box>

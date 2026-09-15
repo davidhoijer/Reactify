@@ -14,6 +14,7 @@ interface CurrentPlaybackPollingState {
   playback: PlaybackState | null;
   loading: boolean;
   error: string | null;
+  refresh: () => Promise<void>;
 }
 
 type PollCurrentSong = (allowHidden?: boolean) => Promise<void>;
@@ -182,5 +183,6 @@ export function useCurrentPlaybackPolling(enabled: boolean): CurrentPlaybackPoll
     playback,
     loading: enabled && !initialPollCompleteRef.current ? true : loading,
     error,
+    refresh: () => poll(true),
   };
 }

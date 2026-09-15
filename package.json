@@ -41,6 +41,10 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/jest": "^30.0.0",
     "dotenv": "^16.4.5",
     "jotai": "^2.8.0"
   }
