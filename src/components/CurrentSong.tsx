@@ -14,10 +14,11 @@ import type {PlaybackState} from "../types/PlaybackState";
 interface CurrentSongProps {
   currentSong: CurrentSong | null;
   playback: PlaybackState | null;
+  refreshPlayback: () => Promise<void>;
   topArtists: Artist2[] | null;
 }
 
-const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback, topArtists}) => {
+const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback, refreshPlayback, topArtists}) => {
   const [topArtistsSelected, setTopArtistsSelected] = useState(false);
   const [actionsSelected, setActionsSelected] = useState(false);
 
@@ -49,6 +50,7 @@ const CurrentSongComponent: React.FC<CurrentSongProps> = ({currentSong, playback
           isWideViewport={isWideViewport}
           mobilePanelColor={lightVibrant}
           playback={playback}
+          refreshPlayback={refreshPlayback}
         />
       )}
 

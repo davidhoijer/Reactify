@@ -17,6 +17,7 @@ const MainPage: React.FC = () => {
     <CurrentSongComponent
       currentSong={playbackState.currentSong}
       playback={playbackState.playback}
+      refreshPlayback={playbackState.refresh}
       topArtists={session.topArtists}
     />
   );
