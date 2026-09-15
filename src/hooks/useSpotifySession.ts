@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {tokenStore} from "../api/apiClient";
+import {clearSpotifySession, tokenStore} from "../api/apiClient";
 import {
   fetchProfile,
   fetchUserTopArtists,
@@ -16,6 +16,7 @@ interface SpotifySessionState {
   loading: boolean;
   error: string | null;
   isReady: boolean;
+  logout: () => void;
 }
 
 function errorMessage(error: unknown): string {
@@ -29,6 +30,11 @@ export function useSpotifySession(): SpotifySessionState {
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
 
+  const logout = () => {
+    clearSpotifySession();
+    window.location.replace(window.location.origin + window.location.pathname);
+  };
+
   useEffect(() => {
     let cancelled = false;
     let redirecting = false;
@@ -37,6 +43,7 @@ export function useSpotifySession(): SpotifySessionState {
       try {
         const params = new URLSearchParams(window.location.search);
         const code = params.get("code");
+        const state = params.get("state");
         const bag = tokenStore.read();
 
         if (!bag && !code) {
@@ -46,7 +53,7 @@ export function useSpotifySession(): SpotifySessionState {
         }
 
         if (!bag && code) {
-          await getAccessToken(code);
+          await getAccessToken(code, state);
           const cleanUrl = window.location.origin + window.location.pathname;
           window.history.replaceState({}, document.title, cleanUrl);
         } else if (bag && Date.now() >= bag.expiresAt) {
@@ -98,5 +105,6 @@ export function useSpotifySession(): SpotifySessionState {
     loading,
     error,
     isReady,
+    logout,
   };
 }

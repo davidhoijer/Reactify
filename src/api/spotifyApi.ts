@@ -1,6 +1,6 @@
 import {CLIENT_ID, REDIRECT_URI, SCOPES} from "./config";
 import {generateCodeVerifier, generateCodeChallenge} from "./pkce";
-import {spotifyFetch, tokenStore} from "./apiClient";
+import {clearSpotifySession, spotifyFetch, tokenStore} from "./apiClient";
 import type {Artist2, CurrentSong} from "../types/CurrentSong";
 import type {SpotifyUser} from "../types/SpotifyUser";
 
@@ -59,7 +59,10 @@ async function spotifyCommand(path: string, method: "POST" | "PUT"): Promise<Res
 export async function redirectToAuthCodeFlow() {
   const verifier = generateCodeVerifier();
   const challenge = await generateCodeChallenge(verifier);
-  localStorage.setItem("verifier", verifier);
+  const state = generateCodeVerifier(32);
+  sessionStorage.setItem("spotify_pkce_verifier", verifier);
+  sessionStorage.setItem("spotify_oauth_state", state);
+  localStorage.removeItem("verifier");
 
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
@@ -68,15 +71,20 @@ export async function redirectToAuthCodeFlow() {
     scope: SCOPES,
     code_challenge_method: "S256",
     code_challenge: challenge,
+    state,
     show_dialog: "true",
   });
   document.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
 }
 
-export async function getAccessToken(code: string) {
-  const verifier = localStorage.getItem("verifier");
+export async function getAccessToken(code: string, state: string | null) {
+  const verifier = sessionStorage.getItem("spotify_pkce_verifier");
+  const expectedState = sessionStorage.getItem("spotify_oauth_state");
   if (!code) throw new Error("No code in URL - check REDIRECT_URI and login flow");
-  if (!verifier) throw new Error("Missing PKCE verifier - call redirectToAuthCodeFlow() first");
+  if (!verifier) throw new Error("Missing PKCE verifier. Please start login again.");
+  if (!state || !expectedState || state !== expectedState) {
+    throw new Error("Spotify authorization could not be verified. Please start login again.");
+  }
 
   const body = new URLSearchParams({
     client_id: CLIENT_ID,
@@ -93,6 +101,10 @@ export async function getAccessToken(code: string) {
   });
   if (!res.ok) {
     const txt = await res.text();
+    clearSpotifySession();
+    if (res.status === 400 && txt.includes("invalid_grant")) {
+      throw new Error("Spotify authorization expired. Please log in again.");
+    }
     throw new Error(`Failed to get access token (${res.status}): ${txt}`);
   }
 
@@ -106,6 +118,8 @@ export async function getAccessToken(code: string) {
   }
 
   tokenStore.write({accessToken: access_token, refreshToken: finalRt, expiresIn: expires_in});
+  sessionStorage.removeItem("spotify_pkce_verifier");
+  sessionStorage.removeItem("spotify_oauth_state");
   return {accessToken: access_token, refreshToken: finalRt, expiresIn: expires_in};
 }
 

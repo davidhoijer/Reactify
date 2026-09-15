@@ -25,6 +25,11 @@ export const tokenStore = {
   },
 };
 
+export function clearSpotifySession() {
+  tokenStore.clear();
+  localStorage.removeItem("verifier");
+}
+
 async function backoff(ms: number) {
   return new Promise(r => setTimeout(r, ms));
 }

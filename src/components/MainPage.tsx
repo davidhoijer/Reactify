@@ -19,6 +19,8 @@ const MainPage: React.FC = () => {
       playback={playbackState.playback}
       refreshPlayback={playbackState.refresh}
       topArtists={session.topArtists}
+      userProfile={session.userProfile}
+      onLogout={session.logout}
     />
   );
 };
